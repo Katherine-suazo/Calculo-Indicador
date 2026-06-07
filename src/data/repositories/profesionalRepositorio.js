@@ -10,7 +10,7 @@ class ProfesionalRespositorio {
         return await db.runAsync(
             'insert into profesional(rut, nombre, correo) values (?, ?, ?)',
             [ profesional.rut, profesional.nombre, profesional.correo ]
-        )
+        );
     }
 }
 
