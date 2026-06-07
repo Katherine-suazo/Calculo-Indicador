@@ -10,7 +10,7 @@ class PacienteRepositorio {
         return await db.runAsync(
             'insert into paciente(rut, nombre, correo, celular) values (?, ?, ?, ?)',
             [ paciente.rut, paciente.nombre, paciente.correo, paciente.celular ]
-        )
+        );
     }
 
 }
