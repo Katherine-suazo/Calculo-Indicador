@@ -2,7 +2,12 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { } from "./src/presentation/screens"; /////////
+import { IniciarSesionScreen } from "./src/presentation/screens/IniciarSesion";
+import { HomePacientesScreen } from "./src/presentation/screens/HomePacientes";
+import {  } from "./src/presentation/screens/AgregarPaciente";
+import {  } from "./src/presentation/screens/PerfilPaciente";
+import {  } from "./src/presentation/screens/NuevoIndicador";
+import {  } from "./src/presentation/screens/ResultadoIndicador";
 
 const Stack = createNativeStackNavigator();
 
@@ -14,13 +19,13 @@ export default function App() {
 
           <Stack.Screen
             name = "IniciarSesion"
-            component = {}
+            component = { IniciarSesionScreen }
             options = {{ title: 'Iniciar Sesion' }}
           />
 
           <Stack.Screen
             name = "HomePacientes"
-            component = {}
+            component = { HomePacientesScreen }
             options = {{ title: 'Home Pacientes' }}
           />
 
