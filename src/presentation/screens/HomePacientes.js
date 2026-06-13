@@ -1,9 +1,12 @@
+import { View, Text } from "react-native";
 
 
 export function HomePacientesScreen() {
     
-    
     return(
-        <Text>Home Pacientes</Text>
+        <View>
+            <Text>Home Pacientes</Text>
+        </View> 
     )
+
 }

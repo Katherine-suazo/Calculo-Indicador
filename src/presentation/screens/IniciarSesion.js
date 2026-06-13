@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Alert, Button } from "react-native";
-import { ProfesionalServicio } from '../../services/ProfesionalService'; /////
+import { ProfesionalServicio } from '../../services/ProfesionalService';
 
 
 export function IniciarSesionScreen({ navigation }) {
@@ -9,22 +9,24 @@ export function IniciarSesionScreen({ navigation }) {
     const [loading, setLoading] = useState(false);
 
     const handleIniciarSesion = async () => {
-        if (!rut || !nombre) {
-            Alert.alert('error', 'Debe ingresar rut y nombre');
-            return;
-        }
 
-        try{
-            setLoading(true);
-            await ProfesionalServicio.iniciarSesion( rut, nombre );
-            navigation.navigate('HomePacientes');
-        }
-        catch(error) {
-            Alert.alert('error', error.message);
-        }
-        finally {
-            setLoading(false);
-        }
+        navigation.navigate('HomePacientes');
+        //if (!rut || !nombre) {
+        //    Alert.alert('error', 'Debe ingresar rut y nombre');
+        //   return;
+        //}
+
+        //try{
+        //    setLoading(true);
+        //    await ProfesionalServicio.iniciarSesion( rut, nombre );
+        //    navigation.navigate('HomePacientes');
+        //}
+        //catch(error) {
+        //    Alert.alert('error', error.message);
+        //}
+        //finally {
+        //    setLoading(false);
+        //}
     }
 
 

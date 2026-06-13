@@ -21,7 +21,6 @@ export function crearTablas() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             rut TEXT NOT NULL UNIQUE,
             nombre TEXT NOT NULL,
-            correo TEXT
         )
     `);
 
