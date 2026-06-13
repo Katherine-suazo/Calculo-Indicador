@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { IniciarSesionScreen } from "./src/presentation/screens/IniciarSesion";
 import { HomePacientesScreen } from "./src/presentation/screens/HomePacientes";
+import { AgregarPacienteScreen } from "./src/presentation/screens/AgregarPaciente";
 
 
 const Stack = createNativeStackNavigator();
@@ -24,6 +25,12 @@ export default function App() {
             name = "HomePacientes"
             component = { HomePacientesScreen }
             options = {{ title: 'Home Pacientes' }}
+          />
+
+          <Stack.Screen
+            name = "AgregarPaciente"
+            component = { AgregarPacienteScreen }
+            options = {{ title: 'Agregar Paciente' }}
           />
 
 

@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Alert, Button } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TextInput, StyleSheet, Alert, Button, TouchableOpacity, Image } from "react-native";
 import { ProfesionalServicio } from '../../services/ProfesionalService';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 export function IniciarSesionScreen({ navigation }) {
@@ -31,34 +32,116 @@ export function IniciarSesionScreen({ navigation }) {
 
 
     return (
-        <View>
+        <SafeAreaView style = { styles.container } >
 
-            <Text>Iniciar Sesion</Text>
+            <View style = { styles.formularioContainer } >
 
-            <TextInput
-                placeholder = 'rut'
-                value = { rut }
-                onChangeText = { setRut }
-            />
+                <Image
+                    style = { styles.imagen }
+                    source = {{ uri: 'https://i.pinimg.com/736x/11/a9/36/11a93614f2863683a4d17f74dbcb1883.jpg' }}
+                />
 
-            <TextInput
-                placeholder = 'nombre'
-                value = { nombre }
-                onChangeText = { setNombre }
-            />
+                <Text style = { styles.titulo } >Iniciar Sesion</Text>
 
-            <Button 
-                title = { loading ? 'cargando...' : 'Iniciar Sesion' }
-                onPress = { handleIniciarSesion }
-            />
+                <Text style = { styles.texto } >Rut</Text>
 
-        </View>
+                <TextInput
+                    style = { styles.input }
+                    placeholder = 'Ej: 11.111.111-1'
+                    value = { rut }
+                    onChangeText = { setRut }
+                />
+
+                <Text style = { styles.texto } >Nombre</Text>
+
+                <TextInput
+                    style = { styles.input }
+                    placeholder = 'Jose Nose'
+                    value = { nombre }
+                    onChangeText = { setNombre }
+                />
+
+                <TouchableOpacity style={styles.button} onPress={handleIniciarSesion} disabled={loading} >
+                    <Text style={styles.buttonText}> { loading ? 'cargando...' : 'Iniciar Sesion' } </Text>
+                </TouchableOpacity>
+            </View>
+
+        </SafeAreaView>
     );
 }
 
 
+
+
 const styles = StyleSheet.create({
 
-    
+    container:{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F8FAFC',
+        paddingBottom: 16, 
+    },
+
+    button: {
+        backgroundColor: '#3B82F6',
+        height: 50,
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 8,
+    },
+
+    buttonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: '600'
+    },
+
+    formularioContainer: {
+        width: '85%',
+        alignSelf: 'center',
+        backgroundColor: '#FFFFFF',
+        padding: 20,
+        borderRadius: 16,
+        // sombra para ios
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        // sombra para android
+        elevation: 4, 
+    },
+
+    titulo: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#1E293B',
+        marginBottom: 24,
+        textAlign: 'center',
+    },
+
+    input: {
+        backgroundColor: '#F1F5F9',
+        height: 50,
+        borderRadius: 8,
+        paddingHorizontal: 16,
+        marginBottom: 16,
+        fontSize: 16,
+    },
+
+    texto: {
+        fontWeight: '600',
+        fontSize: 16,
+        marginBottom: 8,
+    },
+
+    imagen: {
+        width: 90,
+        height: 90,
+        alignSelf: 'center',
+        marginBottom: 16,
+        borderRadius: 40,
+    }
 
 });
