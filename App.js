@@ -5,6 +5,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { IniciarSesionScreen } from "./src/presentation/screens/IniciarSesion";
 import { HomePacientesScreen } from "./src/presentation/screens/HomePacientes";
 import { AgregarPacienteScreen } from "./src/presentation/screens/AgregarPaciente";
+import { NuevoIndicadorScreen } from "./src/presentation/screens/NuevoIndicador";
+import { ResultadoIndicadorScreen } from "./src/presentation/screens/ResultadoIndicador";
+import { PerfilPacienteScreen } from "./src/presentation/screens/PerfilPaciente";
 
 
 const Stack = createNativeStackNavigator();
@@ -33,6 +36,23 @@ export default function App() {
             options = {{ title: 'Agregar Paciente' }}
           />
 
+          <Stack.Screen
+            name = "PerfilPaciente"
+            component = { PerfilPacienteScreen }
+            options = {{ title: 'Perfil Paciente' }}
+          />
+
+          <Stack.Screen
+            name = "NuevoIndicador"
+            component = { NuevoIndicadorScreen }
+            options = {{ title: 'Nuevo Indicador' }}
+          />
+
+          <Stack.Screen
+            name = "ResultadoIndicador"
+            component = { ResultadoIndicadorScreen }
+            options = {{ title: 'Resultado Indicador' }}
+          />
 
         </Stack.Navigator>
       </NavigationContainer>
