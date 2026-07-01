@@ -49,6 +49,7 @@ export function HomePacientesScreen({ navigation }) {
     return(
         <SafeAreaView style = { styles.container } edges={['top', 'bottom']} >
 
+
             <View style = {[styles.contenidoContainer, styles.itemContenidoBuscador ]}>
                 <TextInput 
                     style = {styles.inputBuscador}
@@ -69,20 +70,21 @@ export function HomePacientesScreen({ navigation }) {
                 />
             </View>
 
+
             <View style = {[styles.contenidoContainer, styles.itemContenidoHistorial ]}>
                 <Text style = {styles.texto} >Ultimos Indicadores del dia</Text>
                 <FlatList
                     data = {pacientesFiltrados}
-                    keyExtractor={item => item.id}
-                    renderItem={({ item }) => (
+                    keyExtractor = {item => item.id}
+                    renderItem = {({ item }) => (
                         <View style={styles.itemPaciente}>
                             <Text style={styles.textoPaciente}>{item.nombre}</Text>
                         </View>
                     ) }
                     ListEmptyComponent = { <Text style={styles.buscadorVacio} > No se encontraron resultados </Text> }
-                
                 />
             </View>
+
 
             <TouchableOpacity style={styles.button} onPress={handleAgregarPaciente} disabled={loading} >
                 <Text style = { styles.buttonText } > { loading ? 'cargando...' : 'Agregar Paciente' } </Text>
