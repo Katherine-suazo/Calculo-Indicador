@@ -1,6 +1,7 @@
 import  React, { useState } from "react";
 import { View, Text, Button, StyleSheet, TouchableOpacity, TextInput, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { pacienteService } from "../../services/PacienteService";
 
 // para prueba del buscador, despues se borra
 const pacientesBase = [
@@ -20,7 +21,7 @@ const pacientesBase = [
 export function HomePacientesScreen({ navigation }) {
     const [ loading, setLoading ] = useState(false);
     const [ buscar, setBuscar ] = useState('');
-    const [ pacientesFiltrados, setPacientesFiltrados ] = useState(pacientesBase)
+    const [ pacientesFiltrados, setPacientesFiltrados ] = useState(pacientesBase);
 
     const handleBuscar = (texto) => {
         setBuscar(texto);
@@ -45,6 +46,10 @@ export function HomePacientesScreen({ navigation }) {
         navigation.navigate('AgregarPaciente');
     }
     
+    // const handleAgregarPaciente = async () => {
+    //     const pacientes = pacienteService.getPacientes();
+    //     console.log(pacientes);
+    // }
 
     return(
         <SafeAreaView style = { styles.container } edges={['top', 'bottom']} >
