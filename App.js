@@ -1,6 +1,7 @@
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useEffect } from "react";
 
 import { IniciarSesionScreen } from "./src/presentation/screens/IniciarSesion";
 import { HomePacientesScreen } from "./src/presentation/screens/HomePacientes";
@@ -8,11 +9,17 @@ import { AgregarPacienteScreen } from "./src/presentation/screens/AgregarPacient
 import { NuevoIndicadorScreen } from "./src/presentation/screens/NuevoIndicador";
 import { ResultadoIndicadorScreen } from "./src/presentation/screens/ResultadoIndicador";
 import { PerfilPacienteScreen } from "./src/presentation/screens/PerfilPaciente";
+import { crearTablas } from "./src/data/database/tablas";
+import { DatabaseDebugButton } from "./src/presentation/components/DatabaseDebugButton";
 
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  useEffect(() => {
+    crearTablas();
+  }, []);
+
   return (
     <SafeAreaProvider>
       <NavigationContainer>
@@ -56,6 +63,7 @@ export default function App() {
 
         </Stack.Navigator>
       </NavigationContainer>
+      <DatabaseDebugButton />
     </SafeAreaProvider>
   )
 }
