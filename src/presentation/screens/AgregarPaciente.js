@@ -1,18 +1,33 @@
 import React, { useState } from "react";
 import { View, Text, Touchable, TouchableOpacity, StyleSheet, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { pacienteService } from "../../services/PacienteService";
 
 
 export function AgregarPacienteScreen({ navigation }) {
 
     const [loading, setLoading] = useState(false);
 
-    const handleHomePacientes = async () => {
-        navigation.navigate('HomePacientes');
-    };
+    const [rut, setRut] = useState("");
+    const [nombre, setNombre] = useState("");
+    const [correo, setCorreo] = useState("");
+    const [celular, setCelular] = useState("");
 
     const handleGuardarPaciente = async () => {
+        const datos = {
+            "rut":rut, 
+            "fullName": nombre, 
+            "email": correo, 
+            "phone": celular,
+        };
+        console.log(datos);
+        await pacienteService.savePaciente(data)
+
         navigation.navigate('PerfilPaciente');
+    };
+
+    const handleHomePacientes = async () => {
+        navigation.navigate('HomePacientes');
     };
 
     return (
@@ -25,24 +40,32 @@ export function AgregarPacienteScreen({ navigation }) {
                 <TextInput
                     style={styles.input}
                     placeholder="Ej: 11.111.111-1"
+                    value={rut}
+                    onChangeText={setRut}
                 />
 
                 <Text style={styles.texto} > Nombre Completo * </Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Nombre Nombre Apellido Apellido"
+                    value={nombre}
+                    onChangeText={setNombre}
                 />
 
                 <Text style={styles.texto} > Correo Electronico </Text>
                 <TextInput
                     style={styles.input}
                     placeholder="correo@gmail.com"
+                    value={correo}
+                    onChangeText={setCorreo}
                 />
 
                 <Text style={styles.texto} > Celular * </Text>
                 <TextInput
                     style={styles.input}
                     placeholder="+56 9 11112222"
+                    value={celular}
+                    onChangeText={setCelular}
                 />
 
 

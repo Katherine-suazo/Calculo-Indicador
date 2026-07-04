@@ -3,37 +3,27 @@ import { View, Text, Button, StyleSheet, TouchableOpacity, TextInput, FlatList }
 import { SafeAreaView } from "react-native-safe-area-context";
 import { pacienteService } from "../../services/PacienteService";
 
-// para prueba del buscador, despues se borra
-const pacientesBase = [
-    { id: '1', nombre: 'Juan Perez', rut: '12345678-9' },
-    { id: '2', nombre: 'Maria Lopez', rut: '98765432-1' },
-    { id: '3', nombre: 'Carlos Muñoz', rut: '11223344-5' },
-    { id: '4', nombre: 'Ana Silva', rut: '15667889-k' },
-    { id: '5', nombre: 'Juan Pedro', rut: '18334455-6' },
-    { id: '6', nombre: 'Juan Perez', rut: '12345678-9' },
-    { id: '7', nombre: 'Maria Lopez', rut: '98765432-1' },
-    { id: '8', nombre: 'Carlos Muñoz', rut: '11223344-5' },
-    { id: '9', nombre: 'Ana Silva', rut: '15667889-k' },
-    { id: '10', nombre: 'Juan Pedro', rut: '18334455-6' },
-];
+
+const pacientesGet = pacienteService.getPacientes();
 
 
 export function HomePacientesScreen({ navigation }) {
+
     const [ loading, setLoading ] = useState(false);
     const [ buscar, setBuscar ] = useState('');
-    const [ pacientesFiltrados, setPacientesFiltrados ] = useState(pacientesBase);
+    const [ pacientesFiltrados, setPacientesFiltrados ] = useState(pacientesGet);
 
     const handleBuscar = (texto) => {
         setBuscar(texto);
 
         if (texto.trim() === '' ) {
-            setPacientesFiltrados(pacientesBase);
+            setPacientesFiltrados(pacientesGet);
             return;
         }
 
         const textoNormalizado = texto.toLowerCase();
 
-        const resultado = pacientesBase.filter(paciente => {
+        const resultado = pacientesGet.filter(paciente => {
             const nombreCoincide = paciente.nombre.toLowerCase().includes(textoNormalizado);
             const rutCoincide = paciente.rut.toLowerCase().includes(textoNormalizado);
             return nombreCoincide || rutCoincide;
@@ -42,11 +32,11 @@ export function HomePacientesScreen({ navigation }) {
         setPacientesFiltrados(resultado);
     }
 
-    const handleAgregarPaciente = async () => {
+    const handleAgregarPaciente = async() => {
         navigation.navigate('AgregarPaciente');
     }
     
-    // const handleAgregarPaciente = async () => {
+    // const handleMostrarPacientes = async () => {
     //     const pacientes = pacienteService.getPacientes();
     //     console.log(pacientes);
     // }
@@ -54,7 +44,7 @@ export function HomePacientesScreen({ navigation }) {
     return(
         <SafeAreaView style = { styles.container } edges={['top', 'bottom']} >
 
-
+            {/* BUSCAR PACIENTES POR RUT Y NOMBRE */}
             <View style = {[styles.contenidoContainer, styles.itemContenidoBuscador ]}>
                 <TextInput 
                     style = {styles.inputBuscador}
@@ -68,14 +58,14 @@ export function HomePacientesScreen({ navigation }) {
                     keyExtractor={item => item.id}
                     renderItem={({ item }) => (
                         <View style={styles.itemPaciente}>
-                            <Text style={styles.textoPaciente}>{item.nombre}</Text>
+                            <Text style={styles.textoPaciente}>{item.nombre} {item.rut}</Text>
                         </View>
                     ) }
-                    ListEmptyComponent = { <Text style={styles.buscadorVacio} > No se encontraron resultados </Text> }
+                    ListEmptyComponent = { <Text style={styles.buscadorVacio} > No hay resultados </Text> }
                 />
             </View>
 
-
+            {/* MOSTRAR PACIENTES POR ULTIMOS INDICADORES */}
             <View style = {[styles.contenidoContainer, styles.itemContenidoHistorial ]}>
                 <Text style = {styles.texto} >Ultimos Indicadores del dia</Text>
                 <FlatList
@@ -86,7 +76,7 @@ export function HomePacientesScreen({ navigation }) {
                             <Text style={styles.textoPaciente}>{item.nombre}</Text>
                         </View>
                     ) }
-                    ListEmptyComponent = { <Text style={styles.buscadorVacio} > No se encontraron resultados </Text> }
+                    ListEmptyComponent = { <Text style={styles.buscadorVacio} > No hay Indicadores </Text> }
                 />
             </View>
 
