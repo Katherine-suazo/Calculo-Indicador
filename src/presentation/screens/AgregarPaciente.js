@@ -21,7 +21,7 @@ export function AgregarPacienteScreen({ navigation }) {
             "phone": celular,
         };
         console.log(datos);
-        await pacienteService.savePaciente(data)
+        await pacienteService.savePaciente(datos)
 
         navigation.navigate('PerfilPaciente');
     };

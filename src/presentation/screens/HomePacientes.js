@@ -1,29 +1,42 @@
-import  React, { useState } from "react";
+import  React, { useEffect, useEffectEvent, useState } from "react";
 import { View, Text, Button, StyleSheet, TouchableOpacity, TextInput, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { pacienteService } from "../../services/PacienteService";
-
-
-const pacientesGet = pacienteService.getPacientes();
 
 
 export function HomePacientesScreen({ navigation }) {
 
     const [ loading, setLoading ] = useState(false);
     const [ buscar, setBuscar ] = useState('');
-    const [ pacientesFiltrados, setPacientesFiltrados ] = useState(pacientesGet);
+    const [ pacientes, setPacientes ] = useState([])
+    const [ pacientesFiltrados, setPacientesFiltrados ] = useState(MostrarPacientes);
+
+    const handleAgregarPaciente = async() => {
+        navigation.navigate('AgregarPaciente');
+    }
+    
+    const MostrarPacientes = async () => {
+        const pacienteslist = await pacienteService.getPacientes();
+        console.log(pacienteslist);
+        setPacientes(pacienteslist);
+    }
+
+    useEffect(() => {
+      MostrarPacientes();
+    }, [pacientes])
+    
 
     const handleBuscar = (texto) => {
         setBuscar(texto);
 
         if (texto.trim() === '' ) {
-            setPacientesFiltrados(pacientesGet);
+            setPacientesFiltrados(MostrarPacientes);
             return;
         }
 
         const textoNormalizado = texto.toLowerCase();
 
-        const resultado = pacientesGet.filter(paciente => {
+        const resultado = MostrarPacientes.filter(paciente => {
             const nombreCoincide = paciente.nombre.toLowerCase().includes(textoNormalizado);
             const rutCoincide = paciente.rut.toLowerCase().includes(textoNormalizado);
             return nombreCoincide || rutCoincide;
@@ -32,14 +45,6 @@ export function HomePacientesScreen({ navigation }) {
         setPacientesFiltrados(resultado);
     }
 
-    const handleAgregarPaciente = async() => {
-        navigation.navigate('AgregarPaciente');
-    }
-    
-    // const handleMostrarPacientes = async () => {
-    //     const pacientes = pacienteService.getPacientes();
-    //     console.log(pacientes);
-    // }
 
     return(
         <SafeAreaView style = { styles.container } edges={['top', 'bottom']} >
@@ -67,13 +72,14 @@ export function HomePacientesScreen({ navigation }) {
 
             {/* MOSTRAR PACIENTES POR ULTIMOS INDICADORES */}
             <View style = {[styles.contenidoContainer, styles.itemContenidoHistorial ]}>
-                <Text style = {styles.texto} >Ultimos Indicadores del dia</Text>
+                <Text style = {styles.texto} >Ultimos Pacientes con Indicadores</Text>
                 <FlatList
-                    data = {pacientesFiltrados}
+                    data = {pacientes}
                     keyExtractor = {item => item.id}
                     renderItem = {({ item }) => (
                         <View style={styles.itemPaciente}>
-                            <Text style={styles.textoPaciente}>{item.nombre}</Text>
+                            <Text style={styles.textoPacienteName}>{item.full_name} </Text>
+                            <Text style={styles.textoPacienteRut}>{item.rut}</Text>
                         </View>
                     ) }
                     ListEmptyComponent = { <Text style={styles.buscadorVacio} > No hay Indicadores </Text> }
@@ -171,9 +177,14 @@ const styles = StyleSheet.create({
         borderBottomColor: '#F1F5F9',
     },
 
-    textoPaciente: {
+    textoPacienteName: {
+        fontSize: 20,
+        color: '#26303f',
+    },
+
+    textoPacienteRut: {
         fontSize: 16,
-        color: '#334155',
+        color: '#3f4246',
     },
 
     texto: {
