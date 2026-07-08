@@ -8,7 +8,6 @@ export function crearTablas() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             rut TEXT NOT NULL UNIQUE,
             full_name TEXT NOT NULL,
-            email TEXT,
             created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
         )
     `);

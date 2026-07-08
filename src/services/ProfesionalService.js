@@ -19,15 +19,13 @@ class ProfessionalService {
 
         const result = await professionalRepository.insert({
             rut,
-            fullName: nombre,
-            email,
+            fullName: nombre,   
         });
 
         return {
             id: result.lastInsertRowId,
             rut,
             full_name: nombre,
-            email,
         };
     }
 }

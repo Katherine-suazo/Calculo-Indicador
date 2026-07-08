@@ -5,64 +5,106 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 
 export function IniciarSesionScreen({ navigation }) {
+
+    const [loading, setLoading] = useState(false);
+
     const [rut, setRut] = useState('');
     const [nombre, setNombre] = useState('');
-    const [loading, setLoading] = useState(false);
+
+    function calcularDigitoVerificador(num) {
+        let suma = 0;
+        let multiplicador = 2;
+
+        for (let i = num.length - 1; i >= 0; i--) {
+            suma += parseInt(num.charAt(i)) * multiplicador;
+            multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
+        }
+
+        const resto = 11 - (suma % 11);
+
+        if (resto === 11) return '0';
+        if (resto === 10) return 'k';
+        return resto.toString();
+    }
+
 
     const handleIniciarSesion = async () => {
 
-        navigation.navigate('HomePacientes');
-        //if (!rut || !nombre) {
-        //    Alert.alert('error', 'Debe ingresar rut y nombre');
-        //   return;
-        //}
+        if (!rut.trim()) { // trim() elimina los espacios en blanco al inicio y final
+            alert("Debe ingresar Rut");
+            return;
+        }
 
-        //try{
-        //    setLoading(true);
-        //    await ProfesionalServicio.iniciarSesion( rut, nombre );
-        //    navigation.navigate('HomePacientes');
-        //}
-        //catch(error) {
-        //    Alert.alert('error', error.message);
-        //}
-        //finally {
-        //    setLoading(false);
-        //}
+        const rutLimpio = rut.trim().replace(/\./g, "").replace(/-/g, "").toUpperCase() // replace() el texto que deseas reemplazar y el texto nuevo. toUpperCase() vuelve todos los caracteres a mayuscula
+
+        if (rutLimpio.length < 8 || rutLimpio.length > 9) { // length obtener el tamaño o la longitud
+            alert("Rut invalido 1");
+            return;
+        }
+
+        const regex = /^[0-9]+[0-9Kk]$/;
+        if (!regex.test(rutLimpio)) { // test() ejecuta una búsqueda de una ocurrencia entre una expresión regular y una cadena de texto
+            console.log(rutLimpio);
+            alert("Rut invalido 2")
+            return;
+        }
+
+        const cuerpo = rutLimpio.slice(0, -1); // slice() Toma desde el primer carácter (índice 0) hasta el penúltimo (índice -1)
+        const dvEntregado = rutLimpio.slice(-1).toLowerCase(); // slice() extrae únicamente el último carácter. toLowerCase() lo vuelve minuscula
+
+        const dvCalculado = calcularDigitoVerificador(cuerpo);
+        if (dvCalculado !== dvEntregado) {
+            alert("Rut invalido 3")
+            return;
+        }
+
+        if (!nombre.trim()) {
+            alert("Debe ingresar nombre")
+            return;
+        }
+
+        const datos = {
+            "rut": rutLimpio,
+            "fullName": nombre,
+        }
+        console.log(datos);
+
+        navigation.navigate('HomePacientes');
     }
 
 
     return (
-        <SafeAreaView style = { styles.container } >
+        <SafeAreaView style={styles.container} >
 
-            <View style = { styles.formularioContainer } >
+            <View style={styles.formularioContainer} >
 
                 <Image
-                    style = { styles.imagen }
-                    source = {{ uri: 'https://i.pinimg.com/736x/11/a9/36/11a93614f2863683a4d17f74dbcb1883.jpg' }}
+                    style={styles.imagen}
+                    source={{ uri: 'https://i.pinimg.com/736x/11/a9/36/11a93614f2863683a4d17f74dbcb1883.jpg' }}
                 />
 
-                <Text style = { styles.titulo } >Iniciar Sesion</Text>
+                <Text style={styles.titulo} >Iniciar Sesion</Text>
 
-                <Text style = { styles.texto } >Rut</Text>
-
+                {/* INGRESAR RUT */}
+                <Text style={styles.texto} >Rut</Text>
                 <TextInput
-                    style = { styles.input }
-                    placeholder = 'Ej: 11.111.111-1'
-                    value = { rut }
-                    onChangeText = { setRut }
+                    style={styles.input}
+                    placeholder='Ej: 11.111.111-1'
+                    value={rut}
+                    onChangeText={setRut}
                 />
 
-                <Text style = { styles.texto } >Nombre</Text>
-
+                {/* INGRESAR NOMBRE */}
+                <Text style={styles.texto} >Nombre</Text>
                 <TextInput
-                    style = { styles.input }
-                    placeholder = 'Jose Nose'
-                    value = { nombre }
-                    onChangeText = { setNombre }
+                    style={styles.input}
+                    placeholder='Jose Nose'
+                    value={nombre}
+                    onChangeText={setNombre}
                 />
 
                 <TouchableOpacity style={styles.button} onPress={handleIniciarSesion} disabled={loading} >
-                    <Text style={styles.buttonText}> { loading ? 'cargando...' : 'Iniciar Sesion' } </Text>
+                    <Text style={styles.buttonText}> {loading ? 'cargando...' : 'Iniciar Sesion'} </Text>
                 </TouchableOpacity>
             </View>
 
@@ -75,12 +117,12 @@ export function IniciarSesionScreen({ navigation }) {
 
 const styles = StyleSheet.create({
 
-    container:{
+    container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#F8FAFC',
-        paddingBottom: 16, 
+        paddingBottom: 16,
     },
 
     button: {
@@ -110,7 +152,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 8,
         // sombra para android
-        elevation: 4, 
+        elevation: 4,
     },
 
     titulo: {

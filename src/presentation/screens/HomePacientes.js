@@ -1,35 +1,48 @@
-import  React, { useEffect, useEffectEvent, useState } from "react";
+import React, { useEffect, useEffectEvent, useState } from "react";
 import { View, Text, Button, StyleSheet, TouchableOpacity, TextInput, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { pacienteService } from "../../services/PacienteService";
+import { profesionalService } from "../../services/ProfesionalService";
 
 
 export function HomePacientesScreen({ navigation }) {
 
-    const [ loading, setLoading ] = useState(false);
-    const [ buscar, setBuscar ] = useState('');
-    const [ pacientes, setPacientes ] = useState([])
-    const [ pacientesFiltrados, setPacientesFiltrados ] = useState(MostrarPacientes);
+    const [loading, setLoading] = useState(false);
+    const [buscar, setBuscar] = useState('');
+    const [pacientes, setPacientes] = useState([])
+    const [pacientesFiltrados, setPacientesFiltrados] = useState(MostrarPacientes);
+    // const [ nombreProfesional, setNombreProfesional ] = useState(MostrarProfesional);
 
-    const handleAgregarPaciente = async() => {
+    const handleAgregarPaciente = async () => {
         navigation.navigate('AgregarPaciente');
     }
-    
+
+    const handlePerfilPaciente = async () => {
+        navigation.navigate('PerfilPaciente');
+    }
+
     const MostrarPacientes = async () => {
         const pacienteslist = await pacienteService.getPacientes();
         console.log(pacienteslist);
         setPacientes(pacienteslist);
     }
 
+    // const MostrarProfesional = async () => {
+    //     const profesionalList = await profesionalService.getProfesionales(id);
+    //     console.log(profesionalList);
+    //     setNombreProfesional(profesionalList);
+    // }
+
     useEffect(() => {
-      MostrarPacientes();
+        MostrarPacientes();
+        //   MostrarProfesional();
     }, [pacientes])
-    
+
 
     const handleBuscar = (texto) => {
         setBuscar(texto);
 
-        if (texto.trim() === '' ) {
+        if (texto.trim() === '') {
             setPacientesFiltrados(MostrarPacientes);
             return;
         }
@@ -45,53 +58,57 @@ export function HomePacientesScreen({ navigation }) {
         setPacientesFiltrados(resultado);
     }
 
+    const AbrirPerfil = ({ item }) => (
+        <TouchableOpacity onPress={handlePerfilPaciente} disabled={loading}>
+            <View style={styles.itemPaciente}>
+                <Text style={styles.textoPacienteName}>{item.full_name} </Text>
+                <Text style={styles.textoPacienteRut}>{item.rut}</Text>
+            </View>
+        </TouchableOpacity>
+    );
 
-    return(
-        <SafeAreaView style = { styles.container } edges={['top', 'bottom']} >
+
+    return (
+        <SafeAreaView style={styles.container} edges={['top', 'bottom']} >
 
             {/* BUSCAR PACIENTES POR RUT Y NOMBRE */}
-            <View style = {[styles.contenidoContainer, styles.itemContenidoBuscador ]}>
-                <TextInput 
-                    style = {styles.inputBuscador}
-                    placeholder = "Buscar paciente rut/nombre"
-                    clearButtonMode = "while-editing"
-                    value = {buscar}
-                    onChangeText = {handleBuscar}
+            <View style={[styles.contenidoContainer, styles.itemContenidoBuscador]}>
+                <TextInput
+                    style={styles.inputBuscador}
+                    placeholder="Buscar paciente rut/nombre"
+                    clearButtonMode="while-editing"
+                    value={buscar}
+                    onChangeText={handleBuscar}
                 />
                 <FlatList
-                    data = {pacientesFiltrados}
+                    data={pacientesFiltrados}
                     keyExtractor={item => item.id}
                     renderItem={({ item }) => (
                         <View style={styles.itemPaciente}>
                             <Text style={styles.textoPaciente}>{item.nombre} {item.rut}</Text>
                         </View>
-                    ) }
-                    ListEmptyComponent = { <Text style={styles.buscadorVacio} > No hay resultados </Text> }
+                    )}
+                    ListEmptyComponent={<Text style={styles.buscadorVacio} > No hay resultados </Text>}
                 />
             </View>
 
             {/* MOSTRAR PACIENTES POR ULTIMOS INDICADORES */}
-            <View style = {[styles.contenidoContainer, styles.itemContenidoHistorial ]}>
-                <Text style = {styles.texto} >Ultimos Pacientes con Indicadores</Text>
+            <View style={[styles.contenidoContainer, styles.itemContenidoHistorial]}>
+                <Text style={styles.texto} >Ultimos Pacientes con Indicadores</Text>
                 <FlatList
-                    data = {pacientes}
-                    keyExtractor = {item => item.id}
-                    renderItem = {({ item }) => (
-                        <View style={styles.itemPaciente}>
-                            <Text style={styles.textoPacienteName}>{item.full_name} </Text>
-                            <Text style={styles.textoPacienteRut}>{item.rut}</Text>
-                        </View>
-                    ) }
-                    ListEmptyComponent = { <Text style={styles.buscadorVacio} > No hay Indicadores </Text> }
+                    data={pacientes}
+                    keyExtractor={item => item.id}
+                    renderItem={AbrirPerfil}
+                    ListEmptyComponent={<Text style={styles.buscadorVacio} > No hay Indicadores </Text>}
                 />
             </View>
 
 
             <TouchableOpacity style={styles.button} onPress={handleAgregarPaciente} disabled={loading} >
-                <Text style = { styles.buttonText } > { loading ? 'cargando...' : 'Agregar Paciente' } </Text>
+                <Text style={styles.buttonText} > {loading ? 'cargando...' : 'Agregar Paciente'} </Text>
             </TouchableOpacity>
 
-        </SafeAreaView> 
+        </SafeAreaView>
     );
 }
 
@@ -103,7 +120,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#F8FAFC',
-        paddingVertical: 16, 
+        paddingVertical: 16,
     },
 
     button: {
@@ -117,7 +134,7 @@ const styles = StyleSheet.create({
     },
 
     buttonText: {
-        color:'#FFFFFF',
+        color: '#FFFFFF',
         fontSize: 16,
         fontWeight: '600'
     },
@@ -133,14 +150,14 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
-        elevation: 4, 
+        elevation: 4,
     },
 
     itemContenidoBuscador: {
         flex: 1,
     },
 
-    itemContenidoHistorial:{
+    itemContenidoHistorial: {
         flex: 1.3,
         paddingBottom: 10,
     },
