@@ -26,39 +26,39 @@ export default function App() {
         <Stack.Navigator initialRouteName="IniciarSesion">
 
           <Stack.Screen
-            name = "IniciarSesion"
-            component = { IniciarSesionScreen }
-            options = {{ title: 'Iniciar Sesion' }}
+            name="IniciarSesion"
+            component={IniciarSesionScreen}
+            options={{ title: 'Iniciar Sesion' }}
           />
 
           <Stack.Screen
-            name = "HomePacientes"
-            component = { HomePacientesScreen }
-            options = {{ title: 'Home Pacientes' }}
+            name="HomePacientes"
+            component={HomePacientesScreen}
+            options={{ title: 'Home Pacientes' }}
           />
 
           <Stack.Screen
-            name = "AgregarPaciente"
-            component = { AgregarPacienteScreen }
-            options = {{ title: 'Agregar Paciente' }}
+            name="AgregarPaciente"
+            component={AgregarPacienteScreen}
+            options={{ title: 'Agregar Paciente' }}
           />
 
           <Stack.Screen
-            name = "PerfilPaciente"
-            component = { PerfilPacienteScreen }
-            options = {{ title: 'Perfil Paciente' }}
+            name="PerfilPaciente"
+            component={PerfilPacienteScreen}
+            options={{ title: 'Perfil Paciente' }}
           />
 
           <Stack.Screen
-            name = "NuevoIndicador"
-            component = { NuevoIndicadorScreen }
-            options = {{ title: 'Nuevo Indicador' }}
+            name="NuevoIndicador"
+            component={NuevoIndicadorScreen}
+            options={{ title: 'Nuevo Indicador' }}
           />
 
           <Stack.Screen
-            name = "ResultadoIndicador"
-            component = { ResultadoIndicadorScreen }
-            options = {{ title: 'Resultado Indicador' }}
+            name="ResultadoIndicador"
+            component={ResultadoIndicadorScreen}
+            options={{ title: 'Resultado Indicador' }}
           />
 
         </Stack.Navigator>

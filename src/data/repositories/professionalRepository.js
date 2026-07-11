@@ -1,4 +1,5 @@
 import db from '../database/connection';
+import { PacienteService } from '../../services/PacienteService';
 
 class ProfessionalRepository {
 

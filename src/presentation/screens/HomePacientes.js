@@ -1,6 +1,7 @@
-import React, { useEffect, useEffectEvent, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Button, StyleSheet, TouchableOpacity, TextInput, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 import { pacienteService } from "../../services/PacienteService";
 import { profesionalService } from "../../services/ProfesionalService";
 
@@ -10,33 +11,24 @@ export function HomePacientesScreen({ navigation }) {
     const [loading, setLoading] = useState(false);
     const [buscar, setBuscar] = useState('');
     const [pacientes, setPacientes] = useState([])
-    const [pacientesFiltrados, setPacientesFiltrados] = useState(MostrarPacientes);
-    // const [ nombreProfesional, setNombreProfesional ] = useState(MostrarProfesional);
+    const [pacientesFiltrados, setPacientesFiltrados] = useState();
 
     const handleAgregarPaciente = async () => {
         navigation.navigate('AgregarPaciente');
     }
 
-    const handlePerfilPaciente = async () => {
-        navigation.navigate('PerfilPaciente');
+    const handlePerfilPaciente = async (rut) => {
+        navigation.navigate('PerfilPaciente', {"rutPaciente": rut});
     }
 
     const MostrarPacientes = async () => {
         const pacienteslist = await pacienteService.getPacientes();
-        console.log(pacienteslist);
         setPacientes(pacienteslist);
     }
 
-    // const MostrarProfesional = async () => {
-    //     const profesionalList = await profesionalService.getProfesionales(id);
-    //     console.log(profesionalList);
-    //     setNombreProfesional(profesionalList);
-    // }
-
     useEffect(() => {
         MostrarPacientes();
-        //   MostrarProfesional();
-    }, [pacientes])
+    }, [])
 
 
     const handleBuscar = (texto) => {
@@ -59,7 +51,7 @@ export function HomePacientesScreen({ navigation }) {
     }
 
     const AbrirPerfil = ({ item }) => (
-        <TouchableOpacity onPress={handlePerfilPaciente} disabled={loading}>
+        <TouchableOpacity onPress={() => handlePerfilPaciente(item.rut)} disabled={loading}>
             <View style={styles.itemPaciente}>
                 <Text style={styles.textoPacienteName}>{item.full_name} </Text>
                 <Text style={styles.textoPacienteRut}>{item.rut}</Text>
@@ -71,7 +63,7 @@ export function HomePacientesScreen({ navigation }) {
     return (
         <SafeAreaView style={styles.container} edges={['top', 'bottom']} >
 
-            {/* BUSCAR PACIENTES POR RUT Y NOMBRE */}
+            {/* BUSCAR PACIENTES POR RUT Y NOMBRE ---------------------------*/}
             <View style={[styles.contenidoContainer, styles.itemContenidoBuscador]}>
                 <TextInput
                     style={styles.inputBuscador}
@@ -92,7 +84,7 @@ export function HomePacientesScreen({ navigation }) {
                 />
             </View>
 
-            {/* MOSTRAR PACIENTES POR ULTIMOS INDICADORES */}
+            {/* MOSTRAR PACIENTES POR ULTIMOS INDICADORES ------------------*/}
             <View style={[styles.contenidoContainer, styles.itemContenidoHistorial]}>
                 <Text style={styles.texto} >Ultimos Pacientes con Indicadores</Text>
                 <FlatList
@@ -126,7 +118,7 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: '#3B82F6',
         height: 50,
-        borderRadius: 8,
+        borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
         width: '85%',

@@ -6,26 +6,26 @@ class ProfessionalService {
         return await professionalRepository.getAll();
     }
 
-    async iniciarSesion(rut, nombre, email = null) {
-        if (!rut || !nombre) {
+    async iniciarSesion(datos) {
+        if (!datos.rut || !datos.fullName) {
             throw new Error('Debe ingresar rut y nombre');
         }
-
-        const existingProfessional = await professionalRepository.getByRut(rut);
-
+        
+        const existingProfessional = await professionalRepository.getByRut(datos.rut);
+        
         if (existingProfessional) {
             return existingProfessional;
         }
-
+        
         const result = await professionalRepository.insert({
-            rut,
-            fullName: nombre,   
+            rut: datos.rut,
+            fullName: datos.fullName,   
         });
 
         return {
             id: result.lastInsertRowId,
-            rut,
-            full_name: nombre,
+            rut: datos.rut,
+            full_name: datos.fullName,
         };
     }
 }

@@ -1,32 +1,33 @@
 import patientRepository from '../data/repositories/patientRepository';
 
+
 class PacienteService {
 
     async getPacientes() {
-        return await patientRepository.getAll();
+        return await patientRepository.obtenerTodosLosPacientes();
     }
 
     async savePaciente(data) {
         const patient = normalizePatient(data);
 
-        if (!patient.rut || !patient.fullName) {
+        if (!patient.rut || !patient.fullName || !patient.phone || !patient.createdBy) {
             throw new Error('Debe ingresar rut y nombre del paciente');
         }
 
-        return await patientRepository.insert(patient);
+        return await patientRepository.guardarNuevoPaciente(patient);
     }
 
     async findByRut(rut) {
-        return await patientRepository.getByRut(rut);
+        return await patientRepository.obtenerPacientePorRut(rut);
     }
 }
 
 function normalizePatient(data) {
     return {
-        rut: data.rut,
-        fullName: data.fullName ?? data.nombre,
-        email: data.email ?? data.correo ?? null,
-        phone: data.phone ?? data.celular ?? null,
+        rut: data.rut?.trim(),
+        fullName: (data.fullName ?? data.nombre)?.trim(),
+        email: (data.email ?? data.correo)?.trim() ?? null,
+        phone: (data.phone ?? data.celular)?.trim() ?? null,
         createdBy: data.createdBy ?? data.professionalId ?? null,
     };
 }

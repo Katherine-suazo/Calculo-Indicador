@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Alert, Button, TouchableOpacity, Image } from "react-native";
-import { ProfesionalServicio } from '../../services/ProfesionalService';
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { profesionalService } from "../../services/ProfesionalService";
 
 
 export function IniciarSesionScreen({ navigation }) {
@@ -44,7 +46,6 @@ export function IniciarSesionScreen({ navigation }) {
 
         const regex = /^[0-9]+[0-9Kk]$/;
         if (!regex.test(rutLimpio)) { // test() ejecuta una búsqueda de una ocurrencia entre una expresión regular y una cadena de texto
-            console.log(rutLimpio);
             alert("Rut invalido 2")
             return;
         }
@@ -67,14 +68,27 @@ export function IniciarSesionScreen({ navigation }) {
             "rut": rutLimpio,
             "fullName": nombre,
         }
-        console.log(datos);
 
+        var profesional = await profesionalService.iniciarSesion(datos);
+        
+        const guardarValorSyncStorage = async (valor) => {
+            try {
+                await AsyncStorage.setItem("profesionalId", JSON.stringify(profesional.id))
+            }
+            catch(error) {
+                console.error("Error al guardar valor", error);
+            }
+        }
+        
+        guardarValorSyncStorage()
+        
         navigation.navigate('HomePacientes');
     }
 
+    // INVESTIGAR MASCARA DE INPUT
 
     return (
-        <SafeAreaView style={styles.container} >
+        <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
 
             <View style={styles.formularioContainer} >
 

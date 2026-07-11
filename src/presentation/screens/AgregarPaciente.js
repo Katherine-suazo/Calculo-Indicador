@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, Touchable, TouchableOpacity, StyleSheet, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 import { pacienteService } from "../../services/PacienteService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export function AgregarPacienteScreen({ navigation }) {
@@ -45,7 +47,6 @@ export function AgregarPacienteScreen({ navigation }) {
 
         const regex = /^[0-9]+[0-9Kk]$/;
         if (!regex.test(rutLimpio)) {
-            console.log(rutLimpio);
             alert("Rut invalido 2")
             return;
         }
@@ -64,16 +65,33 @@ export function AgregarPacienteScreen({ navigation }) {
             return;
         }
 
+        if (!celular.trim()) {
+            alert("Debe ingresar celular del paciente")
+            return;
+        }
+
+        const obtenerValorSyncStorage = async () => {
+            try {
+                const jsonValue = await AsyncStorage.getItem("profesionalId");
+                return jsonValue != null ? JSON.parse(jsonValue): null;
+            } 
+            catch (error) {
+                console.error("Error obteniendo valor de syncStorage", error);
+            }
+        }
+        
+        var idProfesional = await obtenerValorSyncStorage();
+
         const datos = {
             "rut":rut, 
             "fullName": nombre, 
             "email": correo, 
             "phone": celular,
+            "createdBy": idProfesional,
         };
-        console.log(datos);
 
         await pacienteService.savePaciente(datos)
-        navigation.navigate('PerfilPaciente');
+        navigation.navigate('PerfilPaciente'); // ,{id: 'value'}
     };
 
     const handleHomePacientes = async () => {
@@ -159,7 +177,7 @@ const styles = StyleSheet.create({
 
     button: {
         flex: 1,
-        borderRadius: 8,
+        borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 10,
