@@ -31,12 +31,30 @@ export function PerfilPacienteScreen({ navigation }) {
 
         setLoading(true);
         try {
-            console.log(pacienteRut);
+            console.log('perfil de ', pacienteRut);
             const datos = await pacienteService.findByRut(pacienteRut);
             console.log("mostrar paciente", datos);
             setPaciente(datos ?? {});
-        } 
+        }
+        catch {
+            console.log('No se puedo Mostrar al paciente');
+        }
         finally {
+            setLoading(false);
+        }
+    }
+
+    const handleEliminarPaciente = async () => {
+        setLoading(true);
+        try {
+            const datos = await pacienteService.deletePaciente(pacienteRut);
+            console.log('paciente eliminado');
+            navigation.navigate('HomePacientes');
+        }
+        catch {
+            console.log('No se pudo eliminar al paciente');
+        } 
+        finally{
             setLoading(false);
         }
     }
@@ -59,7 +77,18 @@ export function PerfilPacienteScreen({ navigation }) {
 
             <View style={styles.container}>
 
-                <Text style={styles.nombre}>{paciente.full_name}</Text>
+                <View style={styles.containerHeader}>
+
+                    <View style={styles.containerNombre}>
+                        <Text style={styles.nombre}>{paciente.full_name}</Text>
+                    </View>
+
+                    {/* Boton de eliminar paciente */}
+                    <TouchableOpacity style={[styles.buttonEliminar, { backgroundColor: '#e23036', marginTop: 30 }]} onPress={handleEliminarPaciente} >
+                        <Text style={styles.buttonText} > {loading ? 'cargando...' : 'Eliminar'}  </Text>
+                    </TouchableOpacity>
+
+                </View>
 
                 <View style={styles.datosContainerPadre}>
                     <View style={styles.datosContainerHijo}>
@@ -96,6 +125,7 @@ export function PerfilPacienteScreen({ navigation }) {
                     <Text style={styles.buttonText} > {loading ? 'cargando...' : 'Volver al inicio'}  </Text>
                 </TouchableOpacity>
 
+
             </View>
 
         </SafeAreaView>
@@ -131,6 +161,33 @@ const styles = StyleSheet.create({
         elevation: 4,
     },
 
+    containerHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+    },
+
+    containerNombre: {
+        flex: 1,
+        alignItems: 'center',
+    },
+
+    buttonEliminar: {
+        width: 110,
+        height: 40,
+        backgroundColor: '#e21616',
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 20,
+    },
+
+    nombre: {
+        fontSize: 30,
+        fontWeight: '500',
+        paddingTop: 25,
+    },
+
     button: {
         height: 50,
         borderRadius: 20,
@@ -140,16 +197,11 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
     },
 
+
     buttonText: {
         color: '#FFFFFF',
         fontSize: 16,
         fontWeight: '600'
-    },
-
-    nombre: {
-        fontSize: 30,
-        fontWeight: '500',
-        textAlign: 'center',
     },
 
     historial: {
@@ -185,7 +237,7 @@ const styles = StyleSheet.create({
 
     historialVacio: {
         textAlign: 'center',
-        marginVertical: 30,
+        marginVertical: '30%',
         color: '#888',
         fontSize: 16,
     },

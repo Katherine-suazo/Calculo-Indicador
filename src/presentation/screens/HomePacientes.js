@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet, TouchableOpacity, TextInput, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { pacienteService } from "../../services/PacienteService";
-import { profesionalService } from "../../services/ProfesionalService";
 
 
 export function HomePacientesScreen({ navigation }) {
@@ -11,14 +10,15 @@ export function HomePacientesScreen({ navigation }) {
     const [loading, setLoading] = useState(false);
     const [buscar, setBuscar] = useState('');
     const [pacientes, setPacientes] = useState([])
-    const [pacientesFiltrados, setPacientesFiltrados] = useState();
+    const [pacientesFiltrados, setPacientesFiltrados] = useState([]);
 
     const handleAgregarPaciente = async () => {
         navigation.navigate('AgregarPaciente');
     }
 
     const handlePerfilPaciente = async (rut) => {
-        navigation.navigate('PerfilPaciente', {"rutPaciente": rut});
+        console.log('click en paciente', rut);
+        navigation.navigate('PerfilPaciente', { "rutPaciente": rut });
     }
 
     const MostrarPacientes = async () => {
@@ -31,24 +31,34 @@ export function HomePacientesScreen({ navigation }) {
     }, [])
 
 
-    const handleBuscar = (texto) => {
+    const handleBuscar = async (texto) => {
         setBuscar(texto);
 
-        if (texto.trim() === '') {
-            setPacientesFiltrados(MostrarPacientes);
+        const textoLimpio = texto.trim().toLowerCase();
+
+        if (textoLimpio === '') {
+            setPacientesFiltrados([]);
             return;
         }
 
-        const textoNormalizado = texto.toLowerCase();
+        const resultado = pacientes.filter((pacientes) => {
+            const buscarNombre = pacientes.full_name?.toLowerCase() || '';
+            const buscarRut = pacientes.rut?.toLowerCase() || '';
 
-        const resultado = MostrarPacientes.filter(paciente => {
-            const nombreCoincide = paciente.nombre.toLowerCase().includes(textoNormalizado);
-            const rutCoincide = paciente.rut.toLowerCase().includes(textoNormalizado);
-            return nombreCoincide || rutCoincide;
+            return (buscarRut.includes(textoLimpio)) || buscarNombre.includes(textoLimpio);
+
         });
 
         setPacientesFiltrados(resultado);
     }
+
+    const PerfilBuscado = ({ item }) => (
+        <TouchableOpacity onPress={() => handlePerfilPaciente(item.rut)} disabled={loading} >
+            <View style={styles.itemPaciente}>
+                <Text style={styles.textoPacienteRut}>{item.full_name} - {item.rut}</Text>
+            </View>
+        </TouchableOpacity>
+    )
 
     const AbrirPerfil = ({ item }) => (
         <TouchableOpacity onPress={() => handlePerfilPaciente(item.rut)} disabled={loading}>
@@ -67,20 +77,20 @@ export function HomePacientesScreen({ navigation }) {
             <View style={[styles.contenidoContainer, styles.itemContenidoBuscador]}>
                 <TextInput
                     style={styles.inputBuscador}
-                    placeholder="Buscar paciente rut/nombre"
+                    placeholder="Buscar paciente por RUT o nombre"
                     clearButtonMode="while-editing"
                     value={buscar}
                     onChangeText={handleBuscar}
                 />
                 <FlatList
                     data={pacientesFiltrados}
-                    keyExtractor={item => item.id}
-                    renderItem={({ item }) => (
-                        <View style={styles.itemPaciente}>
-                            <Text style={styles.textoPaciente}>{item.nombre} {item.rut}</Text>
-                        </View>
-                    )}
-                    ListEmptyComponent={<Text style={styles.buscadorVacio} > No hay resultados </Text>}
+                    keyExtractor={item => item.id.toString()}
+                    renderItem={PerfilBuscado}
+                    ListEmptyComponent={
+                        buscar.trim() !== '' ? (
+                            <Text style={styles.buscadorVacio} > No hay resultados </Text>
+                        ) : null
+                    }
                 />
             </View>
 
@@ -150,7 +160,7 @@ const styles = StyleSheet.create({
     },
 
     itemContenidoHistorial: {
-        flex: 1.3,
+        flex: 2,
         paddingBottom: 10,
     },
 
