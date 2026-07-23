@@ -8,7 +8,7 @@ class PacienteService {
     }
 
     async savePaciente(data) {
-        
+
         const patient = normalizePatient(data);
 
         if (!patient.rut || !patient.fullName || !patient.phone || !patient.createdBy) {
@@ -20,8 +20,8 @@ class PacienteService {
         patient.rut = rutFormateado;
 
         const resultado = await patientRepository.guardarNuevoPaciente(patient);
-        
-        return {resultado, paciente: patient};
+
+        return { resultado, paciente: patient };
 
         // if (patient.rut) {
         //     throw new Error("El paciente ya existe");
@@ -69,30 +69,30 @@ function calcularDigitoVerificador(num) {
 }
 
 
-function ValidarYFormatearRut (rut) {
+function ValidarYFormatearRut(rut) {
     const rutLimpio = rut.trim().replace(/\./g, "").replace(/-/g, "").toUpperCase();
 
-        if (rutLimpio.length < 8 || rutLimpio.length > 9) {
-            throw new Error("Rut invalido 1");
-        }
+    if (rutLimpio.length < 8 || rutLimpio.length > 9) {
+        throw new Error("Rut invalido 1");
+    }
 
-        const regex = /^[0-9]+[0-9Kk]$/;
+    const regex = /^[0-9]+[0-9Kk]$/;
 
-        if (!regex.test(rutLimpio)) {
-            throw new Error("Rut invalido 2")
-        }
+    if (!regex.test(rutLimpio)) {
+        throw new Error("Rut invalido 2")
+    }
 
-        const cuerpo = rutLimpio.slice(0, -1);
-        const dvEntregado = rutLimpio.slice(-1).toLowerCase();
-        const dvCalculado = calcularDigitoVerificador(cuerpo);
+    const cuerpo = rutLimpio.slice(0, -1);
+    const dvEntregado = rutLimpio.slice(-1).toLowerCase();
+    const dvCalculado = calcularDigitoVerificador(cuerpo);
 
-        if (dvCalculado !== dvEntregado) {
-            throw new Error("Rut invalido 3")
-        }
+    if (dvCalculado !== dvEntregado) {
+        throw new Error("Rut invalido 3")
+    }
 
-        const cuerpoFormateado = Number(cuerpo).toLocaleString("es-CL");
+    const cuerpoFormateado = Number(cuerpo).toLocaleString("es-CL");
 
-        return `${cuerpoFormateado}-${dvEntregado.toUpperCase()}`;
+    return `${cuerpoFormateado}-${dvEntregado.toUpperCase()}`;
 }
 
 

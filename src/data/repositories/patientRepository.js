@@ -22,7 +22,7 @@ class PatientRepository {
                 patient.fullName,
                 patient.email ?? null,
                 patient.phone,
-                patient.createdBy,
+                patient.createdBy,  
             ]
         );
     }

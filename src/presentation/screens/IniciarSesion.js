@@ -13,49 +13,10 @@ export function IniciarSesionScreen({ navigation }) {
     const [rut, setRut] = useState('');
     const [nombre, setNombre] = useState('');
 
-    function calcularDigitoVerificador(num) {
-        let suma = 0;
-        let multiplicador = 2;
-
-        for (let i = num.length - 1; i >= 0; i--) {
-            suma += parseInt(num.charAt(i)) * multiplicador;
-            multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
-        }
-
-        const resto = 11 - (suma % 11);
-
-        if (resto === 11) return '0';
-        if (resto === 10) return 'k';
-        return resto.toString();
-    }
-
-
     const handleIniciarSesion = async () => {
 
-        if (!rut.trim()) { // trim() elimina los espacios en blanco al inicio y final
+        if (!rut.trim()) { 
             alert("Debe ingresar Rut");
-            return;
-        }
-
-        const rutLimpio = rut.trim().replace(/\./g, "").replace(/-/g, "").toUpperCase() // replace() el texto que deseas reemplazar y el texto nuevo. toUpperCase() vuelve todos los caracteres a mayuscula
-
-        if (rutLimpio.length < 8 || rutLimpio.length > 9) { // length obtener el tamaño o la longitud
-            alert("Rut invalido 1");
-            return;
-        }
-
-        const regex = /^[0-9]+[0-9Kk]$/;
-        if (!regex.test(rutLimpio)) { // test() ejecuta una búsqueda de una ocurrencia entre una expresión regular y una cadena de texto
-            alert("Rut invalido 2")
-            return;
-        }
-
-        const cuerpo = rutLimpio.slice(0, -1); // slice() Toma desde el primer carácter (índice 0) hasta el penúltimo (índice -1)
-        const dvEntregado = rutLimpio.slice(-1).toLowerCase(); // slice() extrae únicamente el último carácter. toLowerCase() lo vuelve minuscula
-
-        const dvCalculado = calcularDigitoVerificador(cuerpo);
-        if (dvCalculado !== dvEntregado) {
-            alert("Rut invalido 3")
             return;
         }
 
@@ -65,9 +26,12 @@ export function IniciarSesionScreen({ navigation }) {
         }
 
         const datos = {
-            "rut": rutLimpio,
+            "rut": rut,
             "fullName": nombre,
         }
+
+        console.log('uno');
+        
 
         var profesional = await profesionalService.iniciarSesion(datos);
         
@@ -81,6 +45,9 @@ export function IniciarSesionScreen({ navigation }) {
         }
         
         guardarValorSyncStorage()
+
+        console.log('aaaaa');
+        
         
         navigation.navigate('HomePacientes');
     }

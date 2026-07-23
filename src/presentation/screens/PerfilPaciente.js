@@ -10,7 +10,7 @@ export function PerfilPacienteScreen({ navigation }) {
 
     const [loading, setLoading] = useState(false);
     const [paciente, setPaciente] = useState({});
-    const [diagnosticos, setDiagnosticos] = useState([]);
+    // const [diagnosticos, setDiagnosticos] = useState([]);
 
     const route = useRoute();
     const pacienteRut = route.params?.rutPaciente?.trim();

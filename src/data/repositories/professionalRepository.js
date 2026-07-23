@@ -16,12 +16,11 @@ class ProfessionalRepository {
 
     async insert(professional) {
         return await db.runAsync(
-            `INSERT INTO professionals (rut, full_name, email)
-             VALUES (?, ?, ?)`,
+            `INSERT INTO professionals (rut, full_name)
+             VALUES (?, ?)`,
             [
                 professional.rut,
                 professional.fullName,
-                professional.email ?? null,
             ]
         );
     }

@@ -7,6 +7,10 @@ import { pacienteService } from "../../services/PacienteService";
 export function NuevoIndicadorScreen({ navigation }) {
 
     const [loading, setLoading] = useState(false);
+    const [paciente, setPaciente] = useState({})
+
+    const route = useRoute();
+    const pacienteRut = route.params?.rutPaciente?.trim();
 
     const handleResultadoIndicador = async () => {
         navigation.navigate('ResultadoIndicador');
@@ -16,11 +20,23 @@ export function NuevoIndicadorScreen({ navigation }) {
         navigation.navigate('PerfilPaciente'), {"rutPaciente": rut};
     };
 
+    const mostraPaciente = async () => {
+        if (!pacienteRut) {
+            setPaciente({});
+            return;
+        }
+    }
+
 
     return (
         <SafeAreaView styles={styles.safeArea} edges={['top', 'bottom']}>
             <View>
 
+            <Text>{}</Text>
+
+                <View>
+
+                </View>
 
 
                 <View style={styles.contenedorBotones}>
