@@ -12,13 +12,9 @@ class ProfessionalService {
             throw new Error('Debe ingresar rut y nombre');
         }
 
-        console.log('dos', datos.rut)
-
         const rutFormateado = ValidarYFormatearRut(datos.rut);
 
         datos.rut = rutFormateado;
-
-        console.log('tres', datos.rut)
 
         const existingProfessional = await professionalRepository.getByRut(datos.rut);
 
@@ -26,14 +22,10 @@ class ProfessionalService {
             return existingProfessional;
         }
 
-        console.log('cuatro', datos.rut)
-
         const result = await professionalRepository.insert({
             rut: datos.rut,
             fullName: datos.fullName,
         });
-
-        console.log('cinco')
 
         return {
             id: result.lastInsertRowId,

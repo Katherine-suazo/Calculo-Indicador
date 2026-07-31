@@ -17,7 +17,6 @@ export function HomePacientesScreen({ navigation }) {
     }
 
     const handlePerfilPaciente = async (rut) => {
-        console.log('click en paciente', rut);
         navigation.navigate('PerfilPaciente', { "rutPaciente": rut });
     }
 

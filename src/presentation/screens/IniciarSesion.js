@@ -16,12 +16,12 @@ export function IniciarSesionScreen({ navigation }) {
     const handleIniciarSesion = async () => {
 
         if (!rut.trim()) { 
-            alert("Debe ingresar Rut");
+            Alert.alert('Campo vacio', "Debe ingresar Rut");
             return;
         }
 
         if (!nombre.trim()) {
-            alert("Debe ingresar nombre")
+            Alert.alert('Campo vacio', "Debe ingresar nombre")
             return;
         }
 
@@ -29,10 +29,7 @@ export function IniciarSesionScreen({ navigation }) {
             "rut": rut,
             "fullName": nombre,
         }
-
-        console.log('uno');
         
-
         var profesional = await profesionalService.iniciarSesion(datos);
         
         const guardarValorSyncStorage = async (valor) => {
@@ -45,9 +42,6 @@ export function IniciarSesionScreen({ navigation }) {
         }
         
         guardarValorSyncStorage()
-
-        console.log('aaaaa');
-        
         
         navigation.navigate('HomePacientes');
     }
