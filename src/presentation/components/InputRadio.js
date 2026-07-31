@@ -138,6 +138,8 @@ const InputRadio = ({ onFinalizar }) => {
         );
         console.log('Respuestas:', respuestas);
         console.log('Puntaje total:', total);
+
+        
         onFinalizar(total, respuestas);
     }
 

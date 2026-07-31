@@ -5,7 +5,7 @@ import { useRoute } from "@react-navigation/native";
 
 import { pacienteService } from "../../services/PacienteService";
 import { DiagnosticoService } from "../../services/DiagnosticoService";
-import InputRadius from "../components/InputRadius";
+import InputRadio from "../components/InputRadio";
 
 
 export function NuevoIndicadorScreen({ navigation }) {
@@ -17,7 +17,7 @@ export function NuevoIndicadorScreen({ navigation }) {
     const [totalPuntos, setTotalPuntos] = useState(0);
 
     const route = useRoute();
-    const pacienteRut = route.params?.rutPaciente?.trim();
+    const {pacienteRut} = route.params?.rutPaciente?.trim();
 
     //const handleResultadoIndicador = async () => {
     //    navigation.navigate('ResultadoIndicador');
@@ -59,9 +59,15 @@ export function NuevoIndicadorScreen({ navigation }) {
                 <Text style={styles.nombre}>{paciente.full_name}</Text>
 
                 <View style={styles.preguntaContainer}>
-                    <InputRadius
+                    <InputRadio
                         onFinalizar={(total, respuestas) => {
-                            navigation.navigate('ResultadoIndicador', {total, respuestas});
+                            navigation.navigate('ResultadoIndicador', {
+                                score: total, 
+                                respuestas,
+                                patientId: paciente.id,
+                                pacienteRut: paciente.rut,
+                                pacienteNombre: paciente.full_name,
+                            });
                         }} 
                     />
                 </View>
@@ -72,6 +78,7 @@ export function NuevoIndicadorScreen({ navigation }) {
                     <TouchableOpacity style={[styles.button, { backgroundColor: '#8f8f8f' }]} onPress={() => handlePerfilPaciente(pacienteRut)} >
                         <Text style={styles.buttonText} > {loading ? 'cargando...' : 'Cancelar'}  </Text>
                     </TouchableOpacity>
+                    
                     {/* Boton Calcula el puntaje */}
                     {/*
                     <TouchableOpacity style={[styles.button, { backgroundColor: '#3B82F6' }]} onPress={handleResultadoIndicador} >
