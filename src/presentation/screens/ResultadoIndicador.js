@@ -62,36 +62,56 @@ export function ResultadoIndicadorScreen({ navigation }) {
 
     return (
 
-        <SafeAreaView>
-            <View>
+        <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
 
-                <Text style={styles.puntaje}>Puntaje: {score}</Text>
+            <View style={styles.container}>
+
+                <Text style={styles.tituloResultado}>Resultado</Text>
+
+                <Text style={styles.puntaje}>Total Puntaje:</Text>
+
+                <Text style={styles.puntajeNumero}>{score} de 30</Text>
 
                 <View>
 
                     {score <= 10 ? (
-                        <Text>Leve</Text>
-
+                        <View>
+                            <Text style={styles.leve}>Leve</Text>
+                            <Text style={styles.tituloDefinicion}>Bajo riesgo de amputacion</Text>
+                            <Text style={styles.textoDefinicion}>Manejo en APS - Enfermera(o) Curacion Avanzada.</Text>
+                        </View>
                     ) : score <= 20 ? (
-                        <Text>Moderado</Text>
+                        <View>
+                            <Text style={styles.moderado}>Moderado</Text>
+                            <Text style={styles.tituloDefinicion}>Riesgo parcial de amputacion menor al 30%</Text>
+                            <Text style={styles.textoDefinicion}>Con item de isquemia 0, sin signos de osteomielitis: Manejo de APS, Enfermero(o) Curacion avanzada</Text>
+                            <Text style={styles.textoDefinicion}>Con item de isquemia 0, con signos de osteomielitis derivacion nivel 2rio para su manejo.</Text>
+                            <Text style={styles.textoDefinicion}>Con item de isquemia menor o igual a 1 derivacion nivel 2rio para su manejo</Text>
+                        </View>
 
                     ) : (
-                        <Text>Severo</Text>
+                        <View>
+                            <Text style={styles.severo}>Severo</Text>
+                            <Text style={styles.tituloDefinicion}>Alto riesgo de amputacion, amenaza de la extremidad y la vida</Text>
+                            <Text style={styles.textoDefinicion}>Derivacion inmediata a servicio de urgencia (evaluacion por cirujano)</Text>
+                        </View>
                     )}
 
                 </View>
 
-
-                {/* Boton Guardar Resultado */}
-                <TouchableOpacity
-                    style={[ styles.button, { backgroundColor: '#3B82F6' }, loading && { opacity: 0.6 } ]}
-                    onPress={handleGuardarIndicador}
-                    disabled={loading}
-                >
-                    <Text style={styles.buttonText}>{loading ? 'Guardando...' : 'Guardar'}</Text>
-                </TouchableOpacity>
-
             </View>
+
+            {/* Boton Guardar Resultado */}
+            <TouchableOpacity
+                style={[styles.button, { backgroundColor: '#3B82F6' }, loading && { opacity: 0.6 }]}
+                onPress={handleGuardarIndicador}
+                disabled={loading}
+            >
+                <Text style={styles.buttonText}>{loading ? 'Guardando...' : 'Guardar'}</Text>
+            </TouchableOpacity>
+
+
+
         </SafeAreaView>
 
     )
@@ -103,12 +123,26 @@ export function ResultadoIndicadorScreen({ navigation }) {
 
 const styles = StyleSheet.create({
 
-    container: {
+    safeArea: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         backgroundColor: '#F8FAFC',
         paddingBottom: 16,
+    },
+
+    container: {
+        width: '90%',
+        alignSelf: 'center',
+        backgroundColor: '#FFFFFF',
+        padding: 20,
+        borderRadius: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+        marginBottom: 20,
     },
 
     button: {
@@ -119,6 +153,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         height: 50,
         marginHorizontal: 8,
+        width: '90%',
     },
 
     buttonText: {
@@ -126,6 +161,63 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600'
     },
+
+    tituloResultado: {
+        color: '#5c97f0',
+        fontSize: 25,
+        textAlign: 'center',
+        paddingBottom: 25,
+    },
+
+    puntaje: {
+        textAlign: 'center',
+        fontSize: 22,
+        paddingBottom: 8,
+    },
+
+    puntajeNumero: {
+        textAlign: 'center',
+        fontSize: 25,
+        paddingBottom: 20,
+    },
+
+
+    leve: {
+        textAlign: 'center',
+        fontWeight: '600',
+        fontSize: 30,
+        color: '#32cc41',
+        paddingBottom: 10,
+    },
+
+    moderado: {
+        textAlign: 'center',
+        fontWeight: '600',
+        fontSize: 30,
+        color: '#e19625',
+        paddingBottom: 10,
+    },
+
+    severo: {
+        textAlign: 'center',
+        fontWeight: '600',
+        fontSize: 30,
+        color: '#e12525',
+        paddingBottom: 10,
+    },
+
+    tituloDefinicion: {
+        fontSize: 20,
+        textAlign: 'center',
+        fontWeight: '500',
+        paddingBottom: 15,
+    },
+
+    textoDefinicion: {
+        fontSize: 18,
+        paddingBottom: 10,
+        textAlign: 'center',
+    }
 
 
 })

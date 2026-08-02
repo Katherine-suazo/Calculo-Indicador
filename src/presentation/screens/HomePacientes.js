@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
 
     container: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         backgroundColor: '#F8FAFC',
         paddingVertical: 16,
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     },
 
     contenidoContainer: {
-        width: '85%',
+        width: '90%',
         alignSelf: 'center',
         backgroundColor: '#FFFFFF',
         padding: 20,

@@ -17,7 +17,7 @@ export function NuevoIndicadorScreen({ navigation }) {
     const [totalPuntos, setTotalPuntos] = useState(0);
 
     const route = useRoute();
-    const {pacienteRut} = route.params?.rutPaciente?.trim();
+    const { pacienteRut } = route.params?.rutPaciente?.trim();
 
     //const handleResultadoIndicador = async () => {
     //    navigation.navigate('ResultadoIndicador');
@@ -49,44 +49,41 @@ export function NuevoIndicadorScreen({ navigation }) {
 
     useEffect(() => {
         mostraPaciente();
-    }, [pacienteRut])  
+    }, [pacienteRut])
 
 
     return (
         <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-            <View style={styles.container}>
 
-                <Text style={styles.nombre}>{paciente.full_name}</Text>
+            <Text style={styles.nombre}>{paciente.full_name}</Text>
 
-                <View style={styles.preguntaContainer}>
-                    <InputRadio
-                        onFinalizar={(total, respuestas) => {
-                            navigation.navigate('ResultadoIndicador', {
-                                score: total, 
-                                respuestas,
-                                patientId: paciente.id,
-                                pacienteRut: paciente.rut,
-                                pacienteNombre: paciente.full_name,
-                            });
-                        }} 
-                    />
-                </View>
+            <View style={styles.preguntaContainer}>
+                <InputRadio
+                    onFinalizar={(total, respuestas) => {
+                        navigation.navigate('ResultadoIndicador', {
+                            score: total,
+                            respuestas,
+                            patientId: paciente.id,
+                            pacienteRut: paciente.rut,
+                            pacienteNombre: paciente.full_name,
+                        });
+                    }}
+                />
+            </View>
 
 
-                <View style={styles.contenedorBotones}>
-                    {/* Boton Cancela y devuelve al perfil del paciente */}
-                    <TouchableOpacity style={[styles.button, { backgroundColor: '#8f8f8f' }]} onPress={() => handlePerfilPaciente(pacienteRut)} >
-                        <Text style={styles.buttonText} > {loading ? 'cargando...' : 'Cancelar'}  </Text>
-                    </TouchableOpacity>
-                    
-                    {/* Boton Calcula el puntaje */}
-                    {/*
+            <View style={styles.contenedorBotones}>
+                {/* Boton Cancela y devuelve al perfil del paciente */}
+                <TouchableOpacity style={[styles.button, { backgroundColor: '#8f8f8f' }]} onPress={() => handlePerfilPaciente(pacienteRut)} >
+                    <Text style={styles.buttonText} > {loading ? 'cargando...' : 'Cancelar'}  </Text>
+                </TouchableOpacity>
+
+                {/* Boton Calcula el puntaje */}
+                {/*
                     <TouchableOpacity style={[styles.button, { backgroundColor: '#3B82F6' }]} onPress={handleResultadoIndicador} >
                         <Text style={styles.buttonText} > {loading ? 'cargando...' : 'Calcular'}  </Text>
                     </TouchableOpacity>
                     */}
-                </View>
-
             </View>
         </SafeAreaView>
     )
@@ -98,7 +95,7 @@ const styles = StyleSheet.create({
 
     safeArea: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         backgroundColor: '#F8FAFC',
         paddingBottom: 16,
@@ -116,7 +113,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 10,
+        marginTop: 50,
         height: 50,
         marginHorizontal: 8,
     },
@@ -136,6 +133,7 @@ const styles = StyleSheet.create({
 
     preguntaContainer: {
         width: '90%',
+        height: '68%',
         alignSelf: 'center',
         backgroundColor: '#FFFFFF',
         padding: 20,

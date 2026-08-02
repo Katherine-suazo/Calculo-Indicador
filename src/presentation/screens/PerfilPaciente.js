@@ -74,8 +74,6 @@ export function PerfilPacienteScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
 
-      <View style={styles.container}>
-
         <View style={styles.containerHeader}>
 
           <View style={styles.containerNombre}>
@@ -127,9 +125,6 @@ export function PerfilPacienteScreen({ navigation }) {
           <Text style={styles.buttonText} > {loading ? 'cargando...' : 'Volver al inicio'}  </Text>
         </TouchableOpacity>
 
-
-      </View>
-
     </SafeAreaView>
   )
 
@@ -141,15 +136,17 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#F8FAFC',
-  },
-
-  container: {
     justifyContent: 'flex-start',
     paddingBottom: 16,
   },
 
+  // container: {
+  //   justifyContent: 'flex-start',
+  //   paddingBottom: 16,
+  // },
+
   indicadorContainer: {
-    width: '88%',
+    width: '90%',
     alignSelf: 'center',
     backgroundColor: '#fff',
     padding: 20,

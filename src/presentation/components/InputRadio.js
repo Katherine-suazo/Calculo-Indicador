@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { RadioButton } from 'react-native-paper';
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -34,21 +34,23 @@ const preguntas = [
     {
         id: 4,
         pregunta: '4. Isquemia',
+        definicion: 'ITB: Indice tobillo-brazo, medido por doopler | IDB: Indice, con dedo se refiere al hallux, medido por doppler',
         opciones: [
             { opcion: 'Sin isquemia, sin signos ni sintomas, pulsos pedio y/o tibial posterior (TP) palpables, o ITB 0.90-1.2', score: 0 },
-            { opcion: 'Pulsos palpables, levemente disminuidos o ITB 0.89-0.7* o IDB 0.74-0.6**', score: 1 },
-            { opcion: 'Pulsos debiles, poco palpables o ITB 0.69-0.5* o IDB 0.59-0.3**', score: 2 },
-            { opcion: 'Sin pulsos palpables o ITB < 0.5* o IDB < 0.3**', score: 3 },
+            { opcion: 'Pulsos palpables, levemente disminuidos o ITB 0.89-0.7 o IDB 0.74-0.6', score: 1 },
+            { opcion: 'Pulsos debiles, poco palpables o ITB 0.69-0.5 o IDB 0.59-0.3', score: 2 },
+            { opcion: 'Sin pulsos palpables o ITB < 0.5 o IDB < 0.3', score: 3 },
         ]
     },
     {
         id: 5,
         pregunta: '5. Infeccion',
+        definicion: 'SIRS: Sindrome de respuesta inflamatoria sistematica',
         opciones: [
             { opcion: 'Sin signos de infeccion', score: 0 },
             { opcion: 'Eritemia < 2cm, descarga purulenta, caliente, doloroso', score: 1 },
             { opcion: 'Eritemia < 2cm, infeccion en musculo, tendon articulaciones o hueso', score: 2 },
-            { opcion: 'SIRS***, hiperglicemia o hipoglicemia secundaria', score: 3 },
+            { opcion: 'SIRS, hiperglicemia o hipoglicemia secundaria', score: 3 },
         ]
     },
     {
@@ -139,7 +141,7 @@ const InputRadio = ({ onFinalizar }) => {
         console.log('Respuestas:', respuestas);
         console.log('Puntaje total:', total);
 
-        
+
         onFinalizar(total, respuestas);
     }
 
@@ -149,13 +151,19 @@ const InputRadio = ({ onFinalizar }) => {
 
             <Text style={styles.preguntaCount} >Pregunta {pasoActual + 1} de {preguntas.length}</Text>
 
-            <View>
+            <ScrollView
+                style={styles.contenido}
+                contentContainerStyle={styles.contenidoContainer}
+                showsVerticalScrollIndicator={false}
+            >
                 <Text style={styles.preguntaContainer} >{preguntaActual.pregunta}</Text>
+
+                <Text style={styles.definicionTexto}>{preguntaActual.definicion}</Text>
 
                 {preguntaActual.opciones.map((opcion) => {
 
-                    const seleccionada = respuestas[preguntaActual.id] === opcion.score; 
-                        
+                    const seleccionada = respuestas[preguntaActual.id] === opcion.score;
+
                     return (
 
                         <TouchableOpacity
@@ -175,7 +183,7 @@ const InputRadio = ({ onFinalizar }) => {
                     )
 
                 })}
-            </View>
+            </ScrollView>
 
             <View style={styles.contenedorBotones}>
 
@@ -186,7 +194,7 @@ const InputRadio = ({ onFinalizar }) => {
                 >
                     <Text style={[styles.buttonText, pasoActual === 0 && styles.textoDeshabilitado]} > Anterior </Text>
                 </TouchableOpacity>
-                
+
 
                 <TouchableOpacity onPress={handleSeguiente} style={[styles.button, { backgroundColor: '#9d83ce' }]}>
                     <Text style={styles.buttonText}>
@@ -202,17 +210,36 @@ const InputRadio = ({ onFinalizar }) => {
     );
 };
 
-
-
 export default InputRadio;
 
+
+
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        width: '100%',
+        paddingHorizontal: 13,
+    },
+
+    contenido: {
+        flex: 1,
+    },
+
+    contenidoContainer: {
+        paddingBottom: 20,
+    },
+
+    contenedorBotones: {
+        flexDirection: 'row',
+        width: '100%',
+        paddingVertical: 10,
+    },
+
     button: {
         flex: 1,
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 10,
         height: 50,
         marginHorizontal: 8,
     },
@@ -230,31 +257,27 @@ const styles = StyleSheet.create({
         opacity: 0.6,
     },
 
-    textoDeshabilitado: {
-        color: '#ffffff',
-    },
-
     buttonText: {
         color: '#FFFFFF',
         fontSize: 16,
         fontWeight: '600',
     },
 
-    contenedorBotones: {
-        flexDirection: 'row',
-        width: '100%',
-        justifyContent: 'space-between',
-        marginTop: 10,
-    },
-
     preguntaCount: {
         fontSize: 15,
         textAlign: 'center',
+        paddingVertical: 10,
     },
 
     preguntaContainer: {
         fontSize: 20,
         paddingTop: 15,
+    },
+
+    definicionTexto: {
+        fontSize: 15,
+        paddingTop: 10,
+        color: '#6a6c76',
     },
 
     opcionContainer: {

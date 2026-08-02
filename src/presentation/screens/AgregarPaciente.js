@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     },
 
     formularioContainer: {
-        width: '85%',
+        width: '90%',
         alignSelf: 'center',
         backgroundColor: '#FFFFFF',
         padding: 20,
