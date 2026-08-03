@@ -8,8 +8,7 @@ class DiagnosisRepository {
 
     async getByPatientId(patientId) {
         return await db.getAllAsync(
-            'SELECT * FROM diagnoses WHERE patient_id = ? ORDER BY diagnosis_date DESC',
-            [patientId]
+            'SELECT * FROM diagnoses WHERE patient_id = ? ORDER BY diagnosis_date DESC', [patientId]
         );
     }
 

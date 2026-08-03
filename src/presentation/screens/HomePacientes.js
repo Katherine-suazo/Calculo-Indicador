@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { format } from "date-fns";
 
 import { pacienteService } from "../../services/PacienteService";
+import { diagnosticoService } from "../../services/DiagnosticoService";
 
 
 export function HomePacientesScreen({ navigation }) {
@@ -11,6 +13,7 @@ export function HomePacientesScreen({ navigation }) {
     const [buscar, setBuscar] = useState('');
     const [pacientes, setPacientes] = useState([])
     const [pacientesFiltrados, setPacientesFiltrados] = useState([]);
+    const [ultimosDiagnosticos, setUltimosDiagnosticos] = useState([]);
 
     const handleAgregarPaciente = async () => {
         navigation.navigate('AgregarPaciente');
@@ -25,8 +28,13 @@ export function HomePacientesScreen({ navigation }) {
         setPacientes(pacienteslist);
     }
 
+    const mostrarDiagnosticos = async () => {
+        const diagnosticosList = await pacienteService.getPacienteDiagnosticos();
+        setUltimosDiagnosticos(diagnosticosList);
+    }
+
     useEffect(() => {
-        MostrarPacientes();
+        mostrarDiagnosticos();
     }, [])
 
 
@@ -59,14 +67,25 @@ export function HomePacientesScreen({ navigation }) {
         </TouchableOpacity>
     )
 
-    const AbrirPerfil = ({ item }) => (
-        <TouchableOpacity onPress={() => handlePerfilPaciente(item.rut)} disabled={loading}>
-            <View style={styles.itemPaciente}>
-                <Text style={styles.textoPacienteName}>{item.full_name} </Text>
-                <Text style={styles.textoPacienteRut}>{item.rut}</Text>
-            </View>
-        </TouchableOpacity>
-    );
+    const AbrirPerfil = ({ item }) => {
+        const fechaYHora = item?.diagnosis_date
+            ? format(new Date(item.diagnosis_date), 'dd-MM-yyyy HH:mm')
+            : 'Sin fecha';
+
+        return (
+            <TouchableOpacity onPress={() => handlePerfilPaciente(item.rut)} disabled={loading}>
+                <View style={styles.itemPaciente}>
+                    <Text style={styles.textoPacienteName}>{item.full_name}</Text>
+                    <Text style={styles.textoPacienteRut}>Rut: {item.rut}</Text>
+                    <View style={styles.puntajeYfecha}>
+                        <Text style={styles.textoPacienteRut}>Puntaje: {item.score}</Text>
+                        <Text style={styles.textoPacienteRut}>{fechaYHora}</Text>
+                    </View>
+
+                </View>
+            </TouchableOpacity>
+        );
+    };
 
 
     return (
@@ -97,8 +116,8 @@ export function HomePacientesScreen({ navigation }) {
             <View style={[styles.contenidoContainer, styles.itemContenidoHistorial]}>
                 <Text style={styles.texto} >Ultimos Pacientes con Indicadores</Text>
                 <FlatList
-                    data={pacientes}
-                    keyExtractor={item => item.id}
+                    data={ultimosDiagnosticos}
+                    keyExtractor={(item, index) => item?.id ? item.id.toString() : index.toString()}
                     renderItem={AbrirPerfil}
                     ListEmptyComponent={<Text style={styles.buscadorVacio} > No hay Indicadores </Text>}
                 />
@@ -210,5 +229,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 8,
         color: '#1E293B',
+    },
+
+    puntajeYfecha: {
+        flexDirection: 'row',
+        width: '100%',
+        justifyContent: 'space-between',
     },
 })

@@ -20,8 +20,6 @@ export function NuevoIndicadorScreen({ navigation }) {
     const route = useRoute();
     const pacienteRut = route.params?.rutPaciente?.trim();
 
-    console.log('NuevoIndicador: Rut', pacienteRut);
-
     const handlePerfilPaciente = async (rut) => {
         navigation.goBack();
     };
@@ -45,15 +43,7 @@ export function NuevoIndicadorScreen({ navigation }) {
             setLoading(false);
         }
     }
-
-    // const obtenerIdPaciente = async () => {
-    //     value = await pacienteService.findIdByRut(pacienteRut);
-
-    // }
-
-    // console.log('NuevoIndicador: Rut', pacienteRut);
      
-
     useEffect(() => {
         mostraPaciente();
     }, [pacienteRut])

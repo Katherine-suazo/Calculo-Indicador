@@ -25,14 +25,13 @@ class PacienteService {
 
   }
 
+  async getPacienteDiagnosticos() {
+    return await patientRepository.obtenerUltiDiagPaciente();
+  }
 
   async findByRut(rut) {
     const rutFormateado = ValidarYFormatearRut(rut)
     return await patientRepository.obtenerPacientePorRut(rut);
-  }
-
-  async findIdByRut(rut) {
-    return await patientRepository.obtenerIdPacientePorId(rut);
   }
 
   async findByName(name) {

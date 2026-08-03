@@ -28,30 +28,16 @@ export function ResultadoIndicadorScreen({ navigation }) {
             return;
         }
 
-        console.log('Puntaje1:', score);
-        console.log('respuestas: ', respuestas);
-        console.log('Paciente ID:', patientId);
-        console.log('Paciente nombre:', pacienteNombre);
-
         if (!patientId) {
             Alert.alert('Paciente no disponible', 'No se recibio el identificador del paciente.');
             return;
         }
-
-        console.log('Puntaje2:', score);
 
         setLoading(true);
 
         try {
             const jsonValue = await AsyncStorage.getItem("profesionalId");
             const professionalId = jsonValue != null ? JSON.parse(jsonValue) : null;
-
-            // console.log('Puntaje1:', score);
-            // console.log('respuestas: ', respuestas);
-            // console.log('Paciente ID:', patientId);
-            // console.log('Paciente Nombre', pacienteNombre);
-            console.log('Profesional ID:', professionalId);
-
 
             const resultado = await diagnosticoService.saveIndicador(score, patientId, professionalId);
 
