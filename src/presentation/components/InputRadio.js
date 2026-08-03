@@ -138,8 +138,8 @@ const InputRadio = ({ onFinalizar }) => {
         const total = Object.values(respuestas).reduce(
             (acumulador, respuesta) => acumulador + respuesta, 0
         );
-        console.log('Respuestas:', respuestas);
-        console.log('Puntaje total:', total);
+        console.log('Respuestas:', respuestas); //////////////
+        console.log('Puntaje total:', total);   //////////////
 
 
         onFinalizar(total, respuestas);

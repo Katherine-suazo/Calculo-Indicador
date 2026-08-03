@@ -15,13 +15,12 @@ export function NuevoIndicadorScreen({ navigation }) {
 
     const [checklist, setChecklist] = useState([]);
     const [totalPuntos, setTotalPuntos] = useState(0);
+    const [idpaciente, setIdpaciente] = useState('');
 
     const route = useRoute();
-    const { pacienteRut } = route.params?.rutPaciente?.trim();
+    const pacienteRut = route.params?.rutPaciente?.trim();
 
-    //const handleResultadoIndicador = async () => {
-    //    navigation.navigate('ResultadoIndicador');
-    //};
+    console.log('NuevoIndicador: Rut', pacienteRut);
 
     const handlePerfilPaciente = async (rut) => {
         navigation.goBack();
@@ -46,6 +45,14 @@ export function NuevoIndicadorScreen({ navigation }) {
             setLoading(false);
         }
     }
+
+    // const obtenerIdPaciente = async () => {
+    //     value = await pacienteService.findIdByRut(pacienteRut);
+
+    // }
+
+    // console.log('NuevoIndicador: Rut', pacienteRut);
+     
 
     useEffect(() => {
         mostraPaciente();

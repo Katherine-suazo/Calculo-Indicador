@@ -8,8 +8,13 @@ class PatientRepository {
 
     async obtenerPacientePorRut(rut) {
         return await db.getFirstAsync(
-            'SELECT * FROM patients WHERE TRIM(rut) = TRIM(?)',
-            [rut]
+            'SELECT * FROM patients WHERE TRIM(rut) = TRIM(?)', [rut]
+        );
+    }
+
+    async obtenerIdPacientePorId(rut) {
+        return await db.getFirstAsync(
+            'SELECT id FROM patients WHERE TRIM(rut) = TRIM(?)', [rut]
         );
     }
 
@@ -32,18 +37,15 @@ class PatientRepository {
 
         await db.withExclusiveTransactionAsync(async (tx) => {
             const patient = await tx.getFirstAsync(
-                'SELECT id FROM patients WHERE TRIM(rut) = TRIM(?)',
-                [rut]
+                'SELECT id FROM patients WHERE TRIM(rut) = TRIM(?)',[rut]
             );
 
             await tx.runAsync(
-                'DELETE FROM diagnoses WHERE patient_id = ?',
-                [patient.id]
+                'DELETE FROM diagnoses WHERE patient_id = ?',[patient.id]
             );
 
             deleteResult = await tx.runAsync(
-                'DELETE FROM patients WHERE id = ?',
-                [patient.id]
+                'DELETE FROM patients WHERE id = ?', [patient.id]
             );
         });
 

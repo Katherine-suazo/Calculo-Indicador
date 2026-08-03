@@ -23,21 +23,16 @@ class PacienteService {
 
     return { resultado, paciente: patient };
 
-    // if (patient.rut) {
-    //     throw new Error("El paciente ya existe");
-    //     console.log('El paciente ya existe');
-    // }
-    // else {
-    //     const resultado = await patientRepository.guardarNuevoPaciente(patient);
-    //     console.log('Paciente guardado');
-    //     return {resultado, paciente: patient};
-    // }
   }
 
 
   async findByRut(rut) {
     const rutFormateado = ValidarYFormatearRut(rut)
     return await patientRepository.obtenerPacientePorRut(rut);
+  }
+
+  async findIdByRut(rut) {
+    return await patientRepository.obtenerIdPacientePorId(rut);
   }
 
   async findByName(name) {
