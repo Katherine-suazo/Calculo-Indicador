@@ -1,26 +1,27 @@
-import db from '../database/connection';
+import db from "../database/connection";
 
 class PatientRepository {
+  async obtenerTodosLosPacientes() {
+    return await db.getAllAsync("SELECT * FROM patients ORDER BY full_name");
+  }
 
-    async obtenerTodosLosPacientes() {
-        return await db.getAllAsync('SELECT * FROM patients ORDER BY full_name');
-    }
+  async obtenerPacientePorRut(rut) {
+    return await db.getFirstAsync(
+      "SELECT * FROM patients WHERE TRIM(rut) = TRIM(?)",
+      [rut],
+    );
+  }
 
-    async obtenerPacientePorRut(rut) {
-        return await db.getFirstAsync(
-            'SELECT * FROM patients WHERE TRIM(rut) = TRIM(?)', [rut]
-        );
-    }
+  async obtenerIdPacientePorId(rut) {
+    return await db.getFirstAsync(
+      "SELECT id FROM patients WHERE TRIM(rut) = TRIM(?)",
+      [rut],
+    );
+  }
 
-    async obtenerIdPacientePorId(rut) {
-        return await db.getFirstAsync(
-            'SELECT id FROM patients WHERE TRIM(rut) = TRIM(?)', [rut]
-        );
-    }
-
-    async obtenerUltiDiagPaciente(limit = 15) {
-        return await db.getAllAsync(
-            `SELECT
+  async obtenerUltiDiagPaciente(limit = 15) {
+    return await db.getAllAsync(
+      `SELECT
                 p.id AS patient_id,
                 p.rut,
                 p.full_name,
@@ -36,44 +37,44 @@ class PatientRepository {
             )
             ORDER BY d.diagnosis_date DESC 
             LIMIT ?;`,
-            [limit]
-        );
-    }
+      [limit],
+    );
+  }
 
-    async guardarNuevoPaciente(patient) {
-        return await db.runAsync(
-            `INSERT INTO patients (rut, full_name, email, phone, created_by)
+  async guardarNuevoPaciente(patient) {
+    return await db.runAsync(
+      `INSERT INTO patients (rut, full_name, email, phone, created_by)
              VALUES (?, ?, ?, ?, ?)`,
-            [
-                patient.rut,
-                patient.fullName,
-                patient.email ?? null,
-                patient.phone,
-                patient.createdBy,
-            ]
-        );
-    }
+      [
+        patient.rut,
+        patient.fullName,
+        patient.email ?? null,
+        patient.phone,
+        patient.createdBy,
+      ],
+    );
+  }
 
-    async eliminarPacientePorRut(rut) {
-        let deleteResult = { changes: 0 };
+  async eliminarPacientePorRut(rut) {
+    let deleteResult = { changes: 0 };
 
-        await db.withExclusiveTransactionAsync(async (tx) => {
-            const patient = await tx.getFirstAsync(
-                'SELECT id FROM patients WHERE TRIM(rut) = TRIM(?)', [rut]
-            );
+    await db.withExclusiveTransactionAsync(async (tx) => {
+      const patient = await tx.getFirstAsync(
+        "SELECT id FROM patients WHERE TRIM(rut) = TRIM(?)",
+        [rut],
+      );
 
-            await tx.runAsync(
-                'DELETE FROM diagnoses WHERE patient_id = ?', [patient.id]
-            );
+      await tx.runAsync("DELETE FROM diagnoses WHERE patient_id = ?", [
+        patient.id,
+      ]);
 
-            deleteResult = await tx.runAsync(
-                'DELETE FROM patients WHERE id = ?', [patient.id]
-            );
-        });
+      deleteResult = await tx.runAsync("DELETE FROM patients WHERE id = ?", [
+        patient.id,
+      ]);
+    });
 
-        return deleteResult;
-    }
-
+    return deleteResult;
+  }
 }
 
 export default new PatientRepository();
