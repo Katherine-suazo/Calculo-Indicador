@@ -140,7 +140,6 @@ const InputRadio = ({ onFinalizar }) => {
 
     return (
         <View style={styles.container}>
-            {/* ENCABEZADO DE PROGRESO */}
             <View style={styles.progressHeader}>
                 <Text style={styles.preguntaCount}>
                     Pregunta <Text style={styles.pasoHighlight}>{pasoActual + 1}</Text> de {preguntas.length}
@@ -194,7 +193,6 @@ const InputRadio = ({ onFinalizar }) => {
                 </View>
             </ScrollView>
 
-            {/* BOTONES DE NAVEGACIÓN */}
             <View style={styles.contenedorBotones}>
                 <TouchableOpacity
                     onPress={handleAnterior}

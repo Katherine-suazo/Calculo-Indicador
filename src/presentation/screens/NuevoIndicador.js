@@ -4,21 +4,16 @@ import React, { useState, useEffect } from "react";
 import { useRoute } from "@react-navigation/native";
 
 import { pacienteService } from "../../services/PacienteService";
-import { DiagnosticoService } from "../../services/DiagnosticoService";
 import InputRadio from "../components/InputRadio";
 
 export function NuevoIndicadorScreen({ navigation }) {
     const [loading, setLoading] = useState(false);
     const [paciente, setPaciente] = useState({});
 
-    const [checklist, setChecklist] = useState([]);
-    const [totalPuntos, setTotalPuntos] = useState(0);
-    const [idpaciente, setIdpaciente] = useState('');
-
     const route = useRoute();
     const pacienteRut = route.params?.rutPaciente?.trim();
 
-    const handlePerfilPaciente = async (rut) => {
+    const handlePerfilPaciente = async () => {
         navigation.goBack();
     };
 
@@ -70,15 +65,14 @@ export function NuevoIndicadorScreen({ navigation }) {
             </View>
 
             <View style={styles.contenedorBotones}>
-                {/* Botón Cancela y devuelve al perfil del paciente */}
                 <TouchableOpacity 
                     style={[styles.button, styles.buttonCancelar]} 
-                    onPress={() => handlePerfilPaciente(pacienteRut)}
+                    onPress={handlePerfilPaciente}
                     disabled={loading}
                     activeOpacity={0.8}
                 >
                     <Text style={styles.buttonTextCancelar}>
-                        {loading ? 'Cargando...' : 'Cancelar Evaluacion'}
+                        {loading ? 'Cargando...' : 'Cancelar Evaluación'}
                     </Text>
                 </TouchableOpacity>
             </View>

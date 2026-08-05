@@ -12,7 +12,6 @@ import { PerfilPacienteScreen } from "./src/presentation/screens/PerfilPaciente"
 import { crearTablas } from "./src/data/database/tablas";
 import { DatabaseDebugButton } from "./src/presentation/components/DatabaseDebugButton";
 
-
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -28,13 +27,20 @@ export default function App() {
           <Stack.Screen
             name="IniciarSesion"
             component={IniciarSesionScreen}
-            options={{ title: 'Iniciar Sesion' }}
+            options={{ 
+              title: 'Iniciar Sesión',
+              headerBackVisible: false,
+            }}
           />
 
           <Stack.Screen
             name="HomePacientes"
             component={HomePacientesScreen}
-            options={{ title: 'Home Pacientes' }}
+            options={{ 
+              title: 'Home Pacientes',
+              headerBackVisible: false,
+              gestureEnabled: false,
+            }}
           />
 
           <Stack.Screen
@@ -58,15 +64,15 @@ export default function App() {
           <Stack.Screen
             name="ResultadoIndicador"
             component={ResultadoIndicadorScreen}
-            options={{ title: 'Resultado Indicador' }}
+            options={{ 
+              title: 'Resultado Indicador',
+              headerBackVisible: false,
+            }}
           />
 
         </Stack.Navigator>
       </NavigationContainer>
       <DatabaseDebugButton />
     </SafeAreaProvider>
-  )
+  );
 }
-
-
-

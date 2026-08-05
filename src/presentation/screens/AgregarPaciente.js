@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { pacienteService } from "../../services/PacienteService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const REGEX_TELEFONO_CHILE = /^\+569\d{8}$/;
 
 export function AgregarPacienteScreen({ navigation }) {
     const [loading, setLoading] = useState(false);
@@ -11,59 +13,97 @@ export function AgregarPacienteScreen({ navigation }) {
     const [rut, setRut] = useState("");
     const [nombre, setNombre] = useState("");
     const [correo, setCorreo] = useState("");
-    const [celular, setCelular] = useState("");
+    const [telefono, setTelefono] = useState('+569');
+    const [errorTelefono, setErrorTelefono] = useState('');
+
+
+    const handleTelefonoChange = (text) => {
+        const digits = text.replace(/\D/g, '');
+
+        let cleanDigits = digits;
+
+        if (cleanDigits.startsWith('569')) {
+            cleanDigits = cleanDigits.slice(3);
+        } else if (cleanDigits.startsWith('56')) {
+            cleanDigits = cleanDigits.slice(2);
+        } else if (cleanDigits.startsWith('9')) {
+            cleanDigits = cleanDigits.slice(1);
+        }
+
+        const truncated = cleanDigits.slice(0, 8);
+        const formatted = `+569${truncated}`;
+
+        setTelefono(formatted);
+
+        if (formatted.length > 4 && !REGEX_TELEFONO_CHILE.test(formatted)) {
+            setErrorTelefono('El número debe tener 8 dígitos después de +569');
+        } else {
+            setErrorTelefono('');
+        }
+    };
 
     const handleGuardarPaciente = async () => {
         if (!rut.trim()) {
-            alert("Debe ingresar Rut del paciente");
+            Alert.alert("Campo requerido", "Debe ingresar el RUT del paciente.");
             return;
         }
 
         if (!nombre.trim()) {
-            alert("Debe ingresar nombre del paciente");
+            Alert.alert("Campo requerido", "Debe ingresar el nombre del paciente.");
             return;
         }
 
-        if (!celular.trim()) {
-            alert("Debe ingresar celular del paciente");
+        if (!REGEX_TELEFONO_CHILE.test(telefono)) {
+            Alert.alert(
+                "Teléfono inválido", 
+                "Debe ingresar un número de celular válido (+569 seguido de 8 dígitos)."
+            );
             return;
         }
 
-        const obtenerValorSyncStorage = async () => {
-            try {
-                const jsonValue = await AsyncStorage.getItem("profesionalId");
-                return jsonValue != null ? JSON.parse(jsonValue) : null;
+        setLoading(true);
+
+        try {
+            const jsonValue = await AsyncStorage.getItem("profesionalId");
+            const idProfesional = jsonValue != null ? JSON.parse(jsonValue) : null;
+
+            const datos = {
+                "rut": rut.trim(),
+                "fullName": nombre.trim(),
+                "email": correo.trim(),
+                "phone": telefono.trim(),
+                "createdBy": idProfesional,
+            };
+
+            const rutExistente = await pacienteService.findByRut(rut.trim());
+
+            if (rutExistente) {
+                Alert.alert("Paciente existente", "El RUT ingresado ya se encuentra registrado en el sistema.");
+                return;
             }
-            catch (error) {
-                console.error("Error obteniendo valor de syncStorage", error);
-            }
-        };
 
-        var idProfesional = await obtenerValorSyncStorage();
-
-        const datos = {
-            "rut": rut,
-            "fullName": nombre,
-            "email": correo,
-            "phone": celular,
-            "createdBy": idProfesional,
-        };
-
-        const rutExistente = await pacienteService.findByRut(rut);
-
-        if (rutExistente) {
-            throw new Error("El paciente ya existe");
-            console.log('El paciente ya existe');
-        }
-        else {
             const respuesta = await pacienteService.savePaciente(datos);
-            console.log('Paciente guardado');
-            await navigation.navigate('PerfilPaciente', { "rutPaciente": respuesta.paciente.rut });
+            
+            Alert.alert("¡Éxito!", "Paciente registrado correctamente.", [
+                {
+                    text: "Aceptar",
+                    onPress: () => {
+                        navigation.navigate('PerfilPaciente', { "rutPaciente": respuesta.paciente.rut });
+                    }
+                }
+            ]);
+        } 
+        catch (error) {
+            console.error("Error al guardar paciente:", error);
+            Alert.alert("Error", error.message ?? "No se pudo guardar la información del paciente.");
+        } 
+        finally {
+            setLoading(false);
         }
     };
 
-    const handleHomePacientes = async () => {
-        navigation.navigate('HomePacientes');
+    const handleHomePacientes = () => {
+        navigation.reset({ index: 0, routes: [{ name: 'HomePacientes' }] });
     };
 
     return (
@@ -112,13 +152,15 @@ export function AgregarPacienteScreen({ navigation }) {
                     {/* CELULAR */}
                     <Text style={styles.texto}>Celular <Text style={styles.requerido}>*</Text></Text>
                     <TextInput
-                        style={styles.input}
-                        placeholder="+56 9 11112222"
+                        style={[styles.input, errorTelefono ? styles.inputError : null]}
+                        placeholder="+56912345678"
                         placeholderTextColor="#94A3B8"
-                        value={celular}
-                        onChangeText={setCelular}
+                        value={telefono}
+                        onChangeText={handleTelefonoChange}
                         keyboardType="phone-pad"
+                        maxLength={12} // +569 (4 chars) + 8 dígitos = 12
                     />
+                    {errorTelefono ? <Text style={styles.errorText}>{errorTelefono}</Text> : null}
 
                     {/* BOTONES */}
                     <View style={styles.contenedorBotones}>
@@ -129,18 +171,18 @@ export function AgregarPacienteScreen({ navigation }) {
                             activeOpacity={0.8}
                         >
                             <Text style={styles.buttonTextCancelar}>
-                                {loading ? 'Cargando...' : 'Cancelar'}
+                                Cancelar
                             </Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity 
-                            style={[styles.button, styles.buttonGuardar]} 
-                            onPress={() => handleGuardarPaciente()}
+                            style={[styles.button, styles.buttonGuardar, loading && styles.buttonDisabled]} 
+                            onPress={handleGuardarPaciente}
                             disabled={loading}
                             activeOpacity={0.8}
                         >
                             <Text style={styles.buttonText}>
-                                {loading ? 'Cargando...' : 'Guardar'}
+                                {loading ? 'Guardando...' : 'Guardar'}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -215,6 +257,18 @@ const styles = StyleSheet.create({
         color: '#1E293B',
     },
 
+    inputError: {
+        borderColor: '#EF4444',
+        marginBottom: 4,
+    },
+
+    errorText: {
+        color: '#EF4444',
+        fontSize: 12,
+        marginBottom: 12,
+        fontWeight: '500',
+    },
+
     contenedorBotones: {
         flexDirection: 'row',
         width: '100%',
@@ -238,6 +292,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 8,
         elevation: 4,
+    },
+
+    buttonDisabled: {
+        opacity: 0.65,
     },
 
     buttonCancelar: {

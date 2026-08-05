@@ -10,16 +10,10 @@ export function ResultadoIndicadorScreen({ navigation }) {
     const [loading, setLoading] = useState(false);
 
     const route = useRoute();
-    const { score, respuestas, patientId, pacienteNombre, pacienteRut } = route.params ?? {};
-
-    const handlePerfilPaciente = async () => {
-        navigation.goBack();
-    };
+    const { score, patientId, pacienteRut } = route.params ?? {};
 
     const handleGuardarIndicador = async () => {
-        if (loading) {
-            return;
-        }
+        if (loading) return;
 
         if (score === undefined || score === null) {
             Alert.alert('Resultado no disponible', 'No se recibió el puntaje del indicador.');
@@ -37,15 +31,13 @@ export function ResultadoIndicadorScreen({ navigation }) {
             const jsonValue = await AsyncStorage.getItem("profesionalId");
             const professionalId = jsonValue != null ? JSON.parse(jsonValue) : null;
 
-            const resultado = await diagnosticoService.saveIndicador(score, patientId, professionalId);
-
-            console.log('Diagnóstico guardado: ', resultado);
+            await diagnosticoService.saveIndicador(score, patientId, professionalId);
 
             Alert.alert(
                 'Diagnóstico Guardado', 'El resultado fue guardado correctamente.',
                 [{
                     text: 'Aceptar',
-                    onPress: () => { navigation.navigate('PerfilPaciente', { rutPaciente: pacienteRut }); }
+                    onPress: () => {navigation.reset({index: 1, routes: [{ name: 'HomePacientes' }, { name: 'PerfilPaciente', params: { rutPaciente: pacienteRut } }] }) }
                 }]
             );
         }
@@ -83,22 +75,19 @@ export function ResultadoIndicadorScreen({ navigation }) {
                     <Text style={styles.subtituloHeader}>Evaluación de Riesgo</Text>
                     <Text style={styles.tituloResultado}>Resultado del Indicador</Text>
 
-                    {/* BLOQUE DE PUNTAJE */}
                     <View style={styles.cardPuntaje}>
-                        <Text style={styles.puntajeLabel}>Puntaje Total Obtencion</Text>
+                        <Text style={styles.puntajeLabel}>Puntaje Total Obtenido</Text>
                         <Text style={styles.puntajeNumero}>
                             {score ?? 0} <Text style={styles.puntajeTotal}>/ 30</Text>
                         </Text>
                     </View>
 
-                    {/* BADGE DE NIVEL */}
                     <View style={[styles.badgeContainer, badgeStyle]}>
                         <Text style={[styles.badgeTexto, badgeTextStyle]}>
                             {isLeve ? "Leve" : isModerado ? "Moderado" : "Severo"}
                         </Text>
                     </View>
 
-                    {/* RECOMENDACIONES CLÍNICAS */}
                     <View style={styles.cardDivider} />
 
                     {isLeve ? (
@@ -111,7 +100,9 @@ export function ResultadoIndicadorScreen({ navigation }) {
                     ) : isModerado ? (
                         <View style={styles.seccionDefinicion}>
                             <Text style={styles.tituloDefinicion}>Riesgo parcial de amputación (&lt; 30%)</Text>
-                            <Text style={styles.textoDefinicion}> • Con ítem de isquemia 0, sin signos de osteomielitis: Manejo en APS por Enfermera(o) Curación Avanzada.</Text>
+                            <Text style={styles.textoDefinicion}>
+                                • Con ítem de isquemia 0, sin signos de osteomielitis: Manejo en APS por Enfermera(o) Curación Avanzada.
+                            </Text>
                             <Text style={styles.textoDefinicion}>
                                 • Con ítem de isquemia 0, con signos de osteomielitis: Derivación a nivel secundario para su manejo.
                             </Text>
@@ -130,7 +121,6 @@ export function ResultadoIndicadorScreen({ navigation }) {
                     )}
                 </View>
 
-                {/* BOTÓN GUARDAR RESULTADO */}
                 <TouchableOpacity
                     style={[styles.button, loading && styles.buttonDisabled]}
                     onPress={handleGuardarIndicador}

@@ -11,7 +11,7 @@ export function IniciarSesionScreen({ navigation }) {
     const [nombre, setNombre] = useState('');
 
     const handleIniciarSesion = async () => {
-        if (!rut.trim()) { 
+        if (!rut.trim()) {
             Alert.alert('Campo vacío', "Debe ingresar RUT");
             return;
         }
@@ -25,21 +25,21 @@ export function IniciarSesionScreen({ navigation }) {
             "rut": rut,
             "fullName": nombre,
         };
-        
+
         var profesional = await profesionalService.iniciarSesion(datos);
-        
+
         const guardarValorSyncStorage = async (valor) => {
             try {
                 await AsyncStorage.setItem("profesionalId", JSON.stringify(profesional.id));
             }
-            catch(error) {
+            catch (error) {
                 console.error("Error al guardar valor", error);
             }
         };
-        
+
         guardarValorSyncStorage();
-        
-        navigation.navigate('HomePacientes');
+
+        navigation.reset({index: 0, routes: [{ name: 'HomePacientes' }] });
     };
 
     return (
@@ -74,9 +74,9 @@ export function IniciarSesionScreen({ navigation }) {
                     onChangeText={setNombre}
                 />
 
-                <TouchableOpacity 
-                    style={styles.button} 
-                    onPress={handleIniciarSesion} 
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={handleIniciarSesion}
                     disabled={loading}
                     activeOpacity={0.8}
                 >
