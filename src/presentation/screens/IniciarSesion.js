@@ -47,7 +47,7 @@ export function IniciarSesionScreen({ navigation }) {
             <View style={styles.formularioContainer}>
                 <Image
                     style={styles.imagen}
-                    source={{ uri: 'https://i.pinimg.com/736x/11/a9/36/11a93614f2863683a4d17f74dbcb1883.jpg' }}
+                    source={require('../../../assets/Foot Logo by kreabie.jpeg')}
                 />
 
                 <Text style={styles.titulo}>Iniciar Sesión</Text>
