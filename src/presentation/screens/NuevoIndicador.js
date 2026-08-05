@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, FlatList } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState, useEffect } from "react";
 import { useRoute } from "@react-navigation/native";
@@ -7,9 +7,7 @@ import { pacienteService } from "../../services/PacienteService";
 import { DiagnosticoService } from "../../services/DiagnosticoService";
 import InputRadio from "../components/InputRadio";
 
-
 export function NuevoIndicadorScreen({ navigation }) {
-
     const [loading, setLoading] = useState(false);
     const [paciente, setPaciente] = useState({});
 
@@ -42,17 +40,20 @@ export function NuevoIndicadorScreen({ navigation }) {
         finally {
             setLoading(false);
         }
-    }
+    };
      
     useEffect(() => {
         mostraPaciente();
-    }, [pacienteRut])
-
+    }, [pacienteRut]);
 
     return (
         <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-
-            <Text style={styles.nombre}>{paciente.full_name}</Text>
+            <View style={styles.headerContainer}>
+                <Text style={styles.subtituloHeader}>Nuevo Indicador</Text>
+                <Text style={styles.nombre} numberOfLines={1}>
+                    {paciente.full_name || 'Cargando paciente...'}
+                </Text>
+            </View>
 
             <View style={styles.preguntaContainer}>
                 <InputRadio
@@ -68,79 +69,88 @@ export function NuevoIndicadorScreen({ navigation }) {
                 />
             </View>
 
-
             <View style={styles.contenedorBotones}>
-                {/* Boton Cancela y devuelve al perfil del paciente */}
-                <TouchableOpacity style={[styles.button, { backgroundColor: '#8f8f8f' }]} onPress={() => handlePerfilPaciente(pacienteRut)} >
-                    <Text style={styles.buttonText} > {loading ? 'cargando...' : 'Cancelar'}  </Text>
+                {/* Botón Cancela y devuelve al perfil del paciente */}
+                <TouchableOpacity 
+                    style={[styles.button, styles.buttonCancelar]} 
+                    onPress={() => handlePerfilPaciente(pacienteRut)}
+                    disabled={loading}
+                    activeOpacity={0.8}
+                >
+                    <Text style={styles.buttonTextCancelar}>
+                        {loading ? 'Cargando...' : 'Cancelar Evaluacion'}
+                    </Text>
                 </TouchableOpacity>
-
-                {/* Boton Calcula el puntaje */}
-                {/*
-                    <TouchableOpacity style={[styles.button, { backgroundColor: '#3B82F6' }]} onPress={handleResultadoIndicador} >
-                        <Text style={styles.buttonText} > {loading ? 'cargando...' : 'Calcular'}  </Text>
-                    </TouchableOpacity>
-                    */}
             </View>
         </SafeAreaView>
-    )
-
+    );
 }
 
-
 const styles = StyleSheet.create({
-
     safeArea: {
         flex: 1,
-        justifyContent: 'flex-start',
+        backgroundColor: '#F1F5F9',
+        paddingHorizontal: 16,
+        paddingBottom: 12,
+    },
+
+    headerContainer: {
         alignItems: 'center',
-        backgroundColor: '#F8FAFC',
-        paddingBottom: 16,
+        marginVertical: 12,
+    },
+
+    subtituloHeader: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#2563EB',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+
+    nombre: {
+        fontSize: 22,
+        fontWeight: '700',
+        color: '#0F172A',
+        marginTop: 2,
+        letterSpacing: -0.3,
+    },
+
+    preguntaContainer: {
+        flex: 1,
+        width: '100%',
+        backgroundColor: '#FFFFFF',
+        padding: 18,
+        borderRadius: 20,
+        marginBottom: 12,
+        shadowColor: '#0F172A',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 12,
+        elevation: 3,
     },
 
     contenedorBotones: {
         flexDirection: 'row',
         width: '100%',
-        justifyContent: 'space-between',
-        marginTop: 10,
     },
 
     button: {
         flex: 1,
-        borderRadius: 20,
+        borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 50,
         height: 50,
-        marginHorizontal: 8,
     },
 
-    buttonText: {
-        color: '#FFFFFF',
-        fontSize: 16,
-        fontWeight: '600'
+    buttonCancelar: {
+        backgroundColor: '#F1F5F9',
+        borderWidth: 1,
+        borderColor: '#CBD5E1',
     },
 
-    nombre: {
-        fontSize: 30,
-        fontWeight: '500',
-        padding: 25,
-        textAlign: 'center',
+    buttonTextCancelar: {
+        color: '#475569',
+        fontSize: 15,
+        fontWeight: '600',
     },
-
-    preguntaContainer: {
-        width: '90%',
-        height: '68%',
-        alignSelf: 'center',
-        backgroundColor: '#FFFFFF',
-        padding: 20,
-        borderRadius: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-    },
-
-
-})
+});

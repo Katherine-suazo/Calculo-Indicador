@@ -8,27 +8,21 @@ import { pacienteService } from "../../services/PacienteService";
 import diagnosisRepository from "../../data/repositories/diagnosisRepository";
 import { diagnosticoService } from "../../services/DiagnosticoService";
 
-
 export function PerfilPacienteScreen({ navigation }) {
-
   const [loading, setLoading] = useState(false);
   const [paciente, setPaciente] = useState({});
   const [diagnosticos, setDiagnosticos] = useState([]);
 
-
   const route = useRoute();
   const pacienteRut = route.params?.rutPaciente?.trim();
-
 
   const handleNuevoIndicador = async (rut) => {
     navigation.navigate('NuevoIndicador', { "rutPaciente": rut });
   };
 
-
   const handleHomePacientes = async () => {
     navigation.navigate('HomePacientes');
   };
-
 
   const MostrarPaciente = async () => {
     if (!pacienteRut) {
@@ -42,13 +36,12 @@ export function PerfilPacienteScreen({ navigation }) {
       return datos;
     }
     catch {
-      console.log('(Perfil Paciente)No se puedo Mostrar al paciente');
+      console.log('(Perfil Paciente)No se pudo Mostrar al paciente');
     }
     finally {
       setLoading(false);
     }
-  }
-
+  };
 
   const mostrarHistorialDiag = async () => {
     const datosPaciente = await MostrarPaciente();
@@ -56,8 +49,7 @@ export function PerfilPacienteScreen({ navigation }) {
 
     const diagnosticoPaciente = await diagnosticoService.obtenerDiagnosticosPorPaciente(datosPaciente.id);
     setDiagnosticos(diagnosticoPaciente ?? []);
-  }
-
+  };
 
   const handleEliminarPaciente = async () => {
     setLoading(true);
@@ -73,248 +65,366 @@ export function PerfilPacienteScreen({ navigation }) {
     finally {
       setLoading(false);
     }
-  }
-
+  };
 
   useEffect(() => {
     mostrarHistorialDiag();
-  }, [pacienteRut])
-
+  }, [pacienteRut]);
 
   const HistorialIndicador = ({ item }) => {
     const fechaYHora = item?.diagnosis_date
       ? format(new Date(item.diagnosis_date), "HH:mm dd-MM-yyyy")
       : "Sin fecha";
 
+    const isLeve = item?.score <= 10;
+    const isModerado = item?.score > 10 && item?.score <= 20;
+
+    const badgeStyle = isLeve
+      ? styles.badgeLeve
+      : isModerado
+      ? styles.badgeModerado
+      : styles.badgeSevero;
+
+    const badgeTextStyle = isLeve
+      ? styles.badgeTextoLeve
+      : isModerado
+      ? styles.badgeTextoModerado
+      : styles.badgeTextoSevero;
+
+    const nivelTexto = isLeve ? "Leve" : isModerado ? "Moderado" : "Severo";
+
     return (
-      <View style={styles.datosHistorial}>
-
-        <View style={styles.fechaYpuntaje}>
-          <Text style={styles.textoDefinicion}>Puntaje: </Text>
-          {/* <Text>Profesional: {item?.professional_name ?? 'No Asignado'}</Text> */}
+      <View style={styles.cardHistorial}>
+        <View style={styles.historialHeader}>
+          <Text style={styles.textoPuntaje}>
+            Puntaje: <Text style={styles.textoPuntajeValor}>{item?.score}</Text>/30
+          </Text>
+          <View style={[styles.badgeContainer, badgeStyle]}>
+            <Text style={[styles.badgeTexto, badgeTextStyle]}>{nivelTexto}</Text>
+          </View>
         </View>
 
-        <View style={styles.fechaYpuntaje}>
-
-          {item?.score <= 10 ? (
-            <Text style={styles.leve}>{item.score} de 30 - Leve</Text>
-          ) : item?.score <= 20 ? (
-            <Text style={styles.moderado}>{item.score} de 30 - Moderado</Text>
-          ) : (
-            <Text style={styles.severo}>{item.score} de 30 - Severo</Text>
-          )}
-          <Text style={styles.textoDefinicion}>{fechaYHora}</Text>
+        <View style={styles.historialFooter}>
+          <Text style={styles.textoFecha}>{fechaYHora}</Text>
         </View>
-
       </View>
-    )
-
-  }
-
-
+    );
+  };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+      {/* TARJETA DE INFORMACIÓN DEL PACIENTE */}
+      <View style={styles.cardPerfil}>
+        <View style={styles.containerHeader}>
+          <View style={styles.containerNombre}>
+            <Text style={styles.nombre} numberOfLines={1}>
+              {paciente.full_name || "Cargando..."}
+            </Text>
+          </View>
 
-      <View style={styles.containerHeader}>
-
-        <View style={styles.containerNombre}>
-          <Text style={styles.nombre}>{paciente.full_name}</Text>
+          <TouchableOpacity 
+            style={styles.buttonEliminar} 
+            onPress={handleEliminarPaciente}
+            disabled={loading}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.buttonTextEliminar}>
+              {loading ? '...' : 'Eliminar'}
+            </Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Boton de eliminar paciente */}
-        <TouchableOpacity style={[styles.buttonEliminar, { backgroundColor: '#e23036', marginTop: 30 }]} onPress={handleEliminarPaciente} >
-          <Text style={styles.buttonText} > {loading ? 'cargando...' : 'Eliminar'}  </Text>
-        </TouchableOpacity>
+        <View style={styles.cardDivider} />
 
+        <View style={styles.datosGrid}>
+          <View style={styles.datoFila}>
+            <Text style={styles.datosSubtitulos}>RUT:</Text>
+            <Text style={styles.datos}>{paciente.rut || '-'}</Text>
+          </View>
+
+          <View style={styles.datoFila}>
+            <Text style={styles.datosSubtitulos}>Email:</Text>
+            <Text style={styles.datos} numberOfLines={1}>{paciente.email || '-'}</Text>
+          </View>
+
+          <View style={styles.datoFila}>
+            <Text style={styles.datosSubtitulos}>Teléfono:</Text>
+            <Text style={styles.datos}>{paciente.phone || '-'}</Text>
+          </View>
+        </View>
       </View>
 
-      <View style={styles.datosContainerPadre}>
-
-        <View style={styles.datosContainerHijo}>
-          <Text style={styles.datosSubtitulos}>Rut:</Text>
-          <Text style={styles.datosSubtitulos}>Email:</Text>
-          <Text style={styles.datosSubtitulos}>Telefono:</Text>
-        </View>
-
-        <View style={styles.datosContainerHijo}>
-          <Text style={styles.datos}>{paciente.rut}</Text>
-          <Text style={styles.datos}>{paciente.email}</Text>
-          <Text style={styles.datos}>{paciente.phone}</Text>
-        </View>
-
-      </View>
-
-
-      {/* Boton Nuevo Indicador del paciente */}
-      <TouchableOpacity style={[styles.button, { backgroundColor: '#3B82F6' }]} onPress={() => handleNuevoIndicador(pacienteRut)} >
-        <Text style={styles.buttonText} > {loading ? 'cargando...' : 'Nuevo Indicador'}  </Text>
+      {/* BOTÓN NUEVO INDICADOR */}
+      <TouchableOpacity 
+        style={styles.buttonNuevoIndicador} 
+        onPress={() => handleNuevoIndicador(pacienteRut)} 
+        disabled={loading}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? 'Cargando...' : '+ Nuevo Indicador'}
+        </Text>
       </TouchableOpacity>
 
-      {/* Historial */}
-      <Text style={styles.historial}>Historial</Text>
-      <View style={[styles.indicadorContainer]}>
+      {/* HISTORIAL */}
+      <View style={styles.seccionHistorialHeader}>
+        <Text style={styles.historialTitulo}>Historial de Diagnósticos</Text>
+      </View>
+
+      <View style={styles.indicadorContainer}>
         <FlatList
           data={diagnosticos}
           keyExtractor={(item, index) => item?.id ? item.id.toString() : index.toString()}
           renderItem={HistorialIndicador}
-          ListEmptyComponent={<Text style={styles.historialVacio} > Este paciente no tiene historial </Text>}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <Text style={styles.historialVacio}>Este paciente no tiene historial registrado</Text>
+          }
         />
       </View>
 
-      {/* Boton Volver a Home Pacientes*/}
-      <TouchableOpacity style={[styles.button, { backgroundColor: '#8f8f8f', marginTop: 30 }]} onPress={handleHomePacientes} >
-        <Text style={styles.buttonText} > {loading ? 'cargando...' : 'Volver al inicio'}  </Text>
+      {/* BOTÓN VOLVER */}
+      <TouchableOpacity 
+        style={styles.buttonVolver} 
+        onPress={handleHomePacientes} 
+        disabled={loading}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.buttonTextVolver}>
+          {loading ? 'Cargando...' : 'Volver al Inicio'}
+        </Text>
       </TouchableOpacity>
-
     </SafeAreaView>
-  )
-
+  );
 }
 
-
 const styles = StyleSheet.create({
-
   safeArea: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
-    justifyContent: 'flex-start',
-    paddingBottom: 16,
+    backgroundColor: '#F1F5F9',
+    paddingHorizontal: 16,
+    paddingBottom: 12,
   },
 
-  // container: {
-  //   justifyContent: 'flex-start',
-  //   paddingBottom: 16,
-  // },
-
-  indicadorContainer: {
-    width: '90%',
-    alignSelf: 'center',
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 16,
-    height: '50%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+  // Tarjeta de información del paciente
+  cardPerfil: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 18,
+    marginTop: 8,
+    marginBottom: 12,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 3,
   },
 
   containerHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '100%',
+    justifyContent: 'space-between',
+    gap: 12,
   },
 
   containerNombre: {
     flex: 1,
-    alignItems: 'center',
-  },
-
-  buttonEliminar: {
-    width: 110,
-    height: 40,
-    backgroundColor: '#e21616',
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 20,
   },
 
   nombre: {
-    fontSize: 30,
-    fontWeight: '500',
-    paddingTop: 25,
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#0F172A',
+    letterSpacing: -0.3,
   },
 
-  button: {
+  buttonEliminar: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#FEE2E2',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#FCA5A5',
+  },
+
+  buttonTextEliminar: {
+    color: '#DC2626',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+
+  cardDivider: {
+    height: 1,
+    backgroundColor: '#E2E8F0',
+    marginVertical: 14,
+  },
+
+  datosGrid: {
+    gap: 8,
+  },
+
+  datoFila: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  datosSubtitulos: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#64748B',
+    width: 80,
+  },
+
+  datos: {
+    fontSize: 14,
+    color: '#1E293B',
+    fontWeight: '500',
+    flex: 1,
+  },
+
+  // Botón Nuevo Indicador
+  buttonNuevoIndicador: {
+    backgroundColor: '#2563EB',
     height: 50,
-    borderRadius: 20,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8,
-    marginHorizontal: 20,
+    marginBottom: 16,
+    shadowColor: '#2563EB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
   },
-
 
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600'
+    fontWeight: '700',
+    letterSpacing: 0.2,
   },
 
-  historial: {
-    fontSize: 25,
-    fontWeight: '500',
-    textAlign: 'center',
-    padding: 10,
-    margin: 10,
+  // Historial
+  seccionHistorialHeader: {
+    marginBottom: 8,
+    paddingHorizontal: 4,
   },
 
-  datosContainerPadre: {
+  historialTitulo: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#0F172A',
+    letterSpacing: -0.3,
+  },
+
+  indicadorContainer: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    padding: 14,
+    borderRadius: 20,
+    marginBottom: 12,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+
+  cardHistorial: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+
+  historialHeader: {
     flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'flex-start',
-    marginTop: 10,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
   },
 
-  datosContainerHijo: {
-    padding: 5,
-    marginHorizontal: 20,
+  textoPuntaje: {
+    fontSize: 14,
+    color: '#475569',
   },
 
-  datos: {
-    fontSize: 20,
-    // fontWeight: '500',
+  textoPuntajeValor: {
+    fontWeight: '700',
+    color: '#0F172A',
   },
 
-  datosSubtitulos: {
-    fontSize: 20,
-    // margin: 3.4,
-    // fontWeight: '500',
+  historialFooter: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+
+  textoFecha: {
+    fontSize: 12,
+    color: '#94A3B8',
+    fontWeight: '500',
   },
 
   historialVacio: {
     textAlign: 'center',
-    marginVertical: '30%',
-    color: '#888',
-    fontSize: 16,
+    marginVertical: 40,
+    color: '#94A3B8',
+    fontSize: 14,
+    fontWeight: '500',
   },
 
-  fechaYpuntaje: {
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-between",
+  // Badges de Severidad
+  badgeContainer: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
   },
 
-  datosHistorial: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F1F5F9",
+  badgeTexto: {
+    fontSize: 12,
+    fontWeight: '700',
   },
 
-  leve: {
-    textAlign: 'left',
-    fontSize: 19,
-    color: '#24a331',
+  badgeLeve: {
+    backgroundColor: '#DCFCE7',
   },
 
-  moderado: {
-    textAlign: 'left',
-    fontSize: 19,
-    color: '#e19625',
+  badgeTextoLeve: {
+    color: '#166534',
   },
 
-  severo: {
-    textAlign: 'left',
-    fontSize: 19,
-    color: '#e12525',
+  badgeModerado: {
+    backgroundColor: '#FEF3C7',
   },
 
-  textoDefinicion: {
-    fontSize: 17,
-    textAlign: 'center',
-  }
+  badgeTextoModerado: {
+    color: '#92400E',
+  },
 
-})
+  badgeSevero: {
+    backgroundColor: '#FEE2E2',
+  },
+
+  badgeTextoSevero: {
+    color: '#991B1B',
+  },
+
+  // Botón Volver
+  buttonVolver: {
+    backgroundColor: '#F1F5F9',
+    height: 48,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+  },
+
+  buttonTextVolver: {
+    color: '#475569',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+});

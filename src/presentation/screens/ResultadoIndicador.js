@@ -1,4 +1,4 @@
-import { View, StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, Alert, ScrollView } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute } from '@react-navigation/native';
@@ -6,9 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { diagnosticoService } from '../../services/DiagnosticoService';
 
-
 export function ResultadoIndicadorScreen({ navigation }) {
-
     const [loading, setLoading] = useState(false);
 
     const route = useRoute();
@@ -24,12 +22,12 @@ export function ResultadoIndicadorScreen({ navigation }) {
         }
 
         if (score === undefined || score === null) {
-            Alert.alert('Resultado no disponible', 'No se recibio el puntaje del indicador.');
+            Alert.alert('Resultado no disponible', 'No se recibió el puntaje del indicador.');
             return;
         }
 
         if (!patientId) {
-            Alert.alert('Paciente no disponible', 'No se recibio el identificador del paciente.');
+            Alert.alert('Paciente no disponible', 'No se recibió el identificador del paciente.');
             return;
         }
 
@@ -41,183 +39,280 @@ export function ResultadoIndicadorScreen({ navigation }) {
 
             const resultado = await diagnosticoService.saveIndicador(score, patientId, professionalId);
 
-            console.log('Diagnostico guardado: ', resultado);
+            console.log('Diagnóstico guardado: ', resultado);
 
             Alert.alert(
-                'Diagnostico Guardado', 'El resultado fue guardado correctamente.',
+                'Diagnóstico Guardado', 'El resultado fue guardado correctamente.',
                 [{
                     text: 'Aceptar',
-                    onPress: () => { navigation.navigate('PerfilPaciente', { rutPaciente: pacienteRut }) }
+                    onPress: () => { navigation.navigate('PerfilPaciente', { rutPaciente: pacienteRut }); }
                 }]
             );
         }
         catch (error) {
-            console.error("Error guarguando diagnostico", error);
-            Alert.alert('Error', error.message ?? 'No se pudo guardar el diagnostico.');
+            console.error("Error guardando diagnóstico", error);
+            Alert.alert('Error', error.message ?? 'No se pudo guardar el diagnóstico.');
         }
         finally {
             setLoading(false);
         }
-    }
+    };
+
+    const isLeve = score <= 10;
+    const isModerado = score > 10 && score <= 20;
+
+    const badgeStyle = isLeve
+        ? styles.badgeLeve
+        : isModerado
+        ? styles.badgeModerado
+        : styles.badgeSevero;
+
+    const badgeTextStyle = isLeve
+        ? styles.badgeTextoLeve
+        : isModerado
+        ? styles.badgeTextoModerado
+        : styles.badgeTextoSevero;
 
     return (
-
         <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+            <ScrollView 
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
+                <View style={styles.container}>
+                    <Text style={styles.subtituloHeader}>Evaluación de Riesgo</Text>
+                    <Text style={styles.tituloResultado}>Resultado del Indicador</Text>
 
-            <View style={styles.container}>
+                    {/* BLOQUE DE PUNTAJE */}
+                    <View style={styles.cardPuntaje}>
+                        <Text style={styles.puntajeLabel}>Puntaje Total Obtencion</Text>
+                        <Text style={styles.puntajeNumero}>
+                            {score ?? 0} <Text style={styles.puntajeTotal}>/ 30</Text>
+                        </Text>
+                    </View>
 
-                <Text style={styles.tituloResultado}>Resultado</Text>
+                    {/* BADGE DE NIVEL */}
+                    <View style={[styles.badgeContainer, badgeStyle]}>
+                        <Text style={[styles.badgeTexto, badgeTextStyle]}>
+                            {isLeve ? "Leve" : isModerado ? "Moderado" : "Severo"}
+                        </Text>
+                    </View>
 
-                <Text style={styles.puntaje}>Total Puntaje:</Text>
+                    {/* RECOMENDACIONES CLÍNICAS */}
+                    <View style={styles.cardDivider} />
 
-                <Text style={styles.puntajeNumero}>{score} de 30</Text>
-
-                <View>
-
-                    {score <= 10 ? (
-                        <View>
-                            <Text style={styles.leve}>Leve</Text>
-                            <Text style={styles.tituloDefinicion}>Bajo riesgo de amputacion</Text>
-                            <Text style={styles.textoDefinicion}>Manejo en APS - Enfermera(o) Curacion Avanzada.</Text>
+                    {isLeve ? (
+                        <View style={styles.seccionDefinicion}>
+                            <Text style={styles.tituloDefinicion}>Bajo riesgo de amputación</Text>
+                            <Text style={styles.textoDefinicion}>
+                                • Manejo en APS - Enfermera(o) Curación Avanzada.
+                            </Text>
                         </View>
-                    ) : score <= 20 ? (
-                        <View>
-                            <Text style={styles.moderado}>Moderado</Text>
-                            <Text style={styles.tituloDefinicion}>Riesgo parcial de amputacion menor al 30%</Text>
-                            <Text style={styles.textoDefinicion}>Con item de isquemia 0, sin signos de osteomielitis: Manejo de APS, Enfermero(o) Curacion avanzada</Text>
-                            <Text style={styles.textoDefinicion}>Con item de isquemia 0, con signos de osteomielitis derivacion nivel 2rio para su manejo.</Text>
-                            <Text style={styles.textoDefinicion}>Con item de isquemia menor o igual a 1 derivacion nivel 2rio para su manejo</Text>
+                    ) : isModerado ? (
+                        <View style={styles.seccionDefinicion}>
+                            <Text style={styles.tituloDefinicion}>Riesgo parcial de amputación (&lt; 30%)</Text>
+                            <Text style={styles.textoDefinicion}> • Con ítem de isquemia 0, sin signos de osteomielitis: Manejo en APS por Enfermera(o) Curación Avanzada.</Text>
+                            <Text style={styles.textoDefinicion}>
+                                • Con ítem de isquemia 0, con signos de osteomielitis: Derivación a nivel secundario para su manejo.
+                            </Text>
+                            <Text style={styles.textoDefinicion}>
+                                • Con ítem de isquemia ≤ 1: Derivación a nivel secundario para su manejo.
+                            </Text>
                         </View>
-
                     ) : (
-                        <View>
-                            <Text style={styles.severo}>Severo</Text>
-                            <Text style={styles.tituloDefinicion}>Alto riesgo de amputacion, amenaza de la extremidad y la vida</Text>
-                            <Text style={styles.textoDefinicion}>Derivacion inmediata a servicio de urgencia (evaluacion por cirujano)</Text>
+                        <View style={styles.seccionDefinicion}>
+                            <Text style={styles.tituloDefinicion}>Alto riesgo de amputación</Text>
+                            <Text style={styles.subtituloSevero}>Amenaza de la extremidad y la vida</Text>
+                            <Text style={styles.textoDefinicion}>
+                                • Derivación inmediata a servicio de urgencia (evaluación urgente por cirujano).
+                            </Text>
                         </View>
                     )}
-
                 </View>
 
-            </View>
-
-            {/* Boton Guardar Resultado */}
-            <TouchableOpacity
-                style={[styles.button, { backgroundColor: '#3B82F6' }, loading && { opacity: 0.6 }]}
-                onPress={handleGuardarIndicador}
-                disabled={loading}
-            >
-                <Text style={styles.buttonText}>{loading ? 'Guardando...' : 'Guardar'}</Text>
-            </TouchableOpacity>
-
-
-
+                {/* BOTÓN GUARDAR RESULTADO */}
+                <TouchableOpacity
+                    style={[styles.button, loading && styles.buttonDisabled]}
+                    onPress={handleGuardarIndicador}
+                    disabled={loading}
+                    activeOpacity={0.8}
+                >
+                    <Text style={styles.buttonText}>
+                        {loading ? 'Guardando...' : 'Guardar Resultado'}
+                    </Text>
+                </TouchableOpacity>
+            </ScrollView>
         </SafeAreaView>
-
-    )
-
-
+    );
 }
 
-
-
 const styles = StyleSheet.create({
-
     safeArea: {
         flex: 1,
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        backgroundColor: '#F8FAFC',
-        paddingBottom: 16,
+        backgroundColor: '#F1F5F9',
+    },
+
+    scrollContent: {
+        flexGrow: 1,
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 16,
     },
 
     container: {
-        width: '90%',
-        alignSelf: 'center',
+        width: '100%',
         backgroundColor: '#FFFFFF',
-        padding: 20,
+        padding: 22,
+        borderRadius: 20,
+        shadowColor: '#0F172A',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 12,
+        elevation: 3,
+        marginBottom: 16,
+        alignItems: 'center',
+    },
+
+    subtituloHeader: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#2563EB',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+        marginBottom: 2,
+    },
+
+    tituloResultado: {
+        fontSize: 22,
+        fontWeight: '700',
+        color: '#0F172A',
+        marginBottom: 18,
+        letterSpacing: -0.3,
+    },
+
+    cardPuntaje: {
+        backgroundColor: '#F8FAFC',
+        width: '100%',
+        paddingVertical: 16,
         borderRadius: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-        marginBottom: 20,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+        marginBottom: 14,
+    },
+
+    puntajeLabel: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#64748B',
+        marginBottom: 4,
+    },
+
+    puntajeNumero: {
+        fontSize: 34,
+        fontWeight: '800',
+        color: '#0F172A',
+    },
+
+    puntajeTotal: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#94A3B8',
+    },
+
+    badgeContainer: {
+        paddingHorizontal: 20,
+        paddingVertical: 8,
+        borderRadius: 20,
+        marginBottom: 12,
+    },
+
+    badgeTexto: {
+        fontSize: 16,
+        fontWeight: '700',
+        letterSpacing: 0.3,
+    },
+
+    badgeLeve: {
+        backgroundColor: '#DCFCE7',
+    },
+
+    badgeTextoLeve: {
+        color: '#166534',
+    },
+
+    badgeModerado: {
+        backgroundColor: '#FEF3C7',
+    },
+
+    badgeTextoModerado: {
+        color: '#92400E',
+    },
+
+    badgeSevero: {
+        backgroundColor: '#FEE2E2',
+    },
+
+    badgeTextoSevero: {
+        color: '#991B1B',
+    },
+
+    cardDivider: {
+        height: 1,
+        width: '100%',
+        backgroundColor: '#E2E8F0',
+        marginVertical: 12,
+    },
+
+    seccionDefinicion: {
+        width: '100%',
+    },
+
+    tituloDefinicion: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#0F172A',
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+
+    subtituloSevero: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#DC2626',
+        textAlign: 'center',
+        marginBottom: 10,
+    },
+
+    textoDefinicion: {
+        fontSize: 14,
+        color: '#334155',
+        lineHeight: 20,
+        marginBottom: 8,
     },
 
     button: {
-        // flex: 1,
-        borderRadius: 20,
+        backgroundColor: '#2563EB',
+        height: 52,
+        borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 10,
-        height: 50,
-        marginHorizontal: 8,
-        width: '90%',
+        width: '100%',
+        shadowColor: '#2563EB',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+
+    buttonDisabled: {
+        opacity: 0.65,
     },
 
     buttonText: {
         color: '#FFFFFF',
         fontSize: 16,
-        fontWeight: '600'
+        fontWeight: '700',
+        letterSpacing: 0.2,
     },
-
-    tituloResultado: {
-        color: '#5c97f0',
-        fontSize: 25,
-        textAlign: 'center',
-        paddingBottom: 25,
-    },
-
-    puntaje: {
-        textAlign: 'center',
-        fontSize: 22,
-        paddingBottom: 8,
-    },
-
-    puntajeNumero: {
-        textAlign: 'center',
-        fontSize: 25,
-        paddingBottom: 20,
-    },
-
-
-    leve: {
-        textAlign: 'center',
-        fontWeight: '600',
-        fontSize: 30,
-        color: '#32cc41',
-        paddingBottom: 10,
-    },
-
-    moderado: {
-        textAlign: 'center',
-        fontWeight: '600',
-        fontSize: 30,
-        color: '#e19625',
-        paddingBottom: 10,
-    },
-
-    severo: {
-        textAlign: 'center',
-        fontWeight: '600',
-        fontSize: 30,
-        color: '#e12525',
-        paddingBottom: 10,
-    },
-
-    tituloDefinicion: {
-        fontSize: 20,
-        textAlign: 'center',
-        fontWeight: '500',
-        paddingBottom: 15,
-    },
-
-    textoDefinicion: {
-        fontSize: 18,
-        paddingBottom: 10,
-        textAlign: 'center',
-    }
-
-
-})
+});

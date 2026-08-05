@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, Touchable, TouchableOpacity, StyleSheet, TextInput } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { pacienteService } from "../../services/PacienteService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
 export function AgregarPacienteScreen({ navigation }) {
-
     const [loading, setLoading] = useState(false);
 
     const [rut, setRut] = useState("");
@@ -15,21 +13,19 @@ export function AgregarPacienteScreen({ navigation }) {
     const [correo, setCorreo] = useState("");
     const [celular, setCelular] = useState("");
 
-
     const handleGuardarPaciente = async () => {
-
         if (!rut.trim()) {
             alert("Debe ingresar Rut del paciente");
             return;
         }
 
         if (!nombre.trim()) {
-            alert("Debe ingresar nombre del paciente")
+            alert("Debe ingresar nombre del paciente");
             return;
         }
 
         if (!celular.trim()) {
-            alert("Debe ingresar celular del paciente")
+            alert("Debe ingresar celular del paciente");
             return;
         }
 
@@ -41,7 +37,7 @@ export function AgregarPacienteScreen({ navigation }) {
             catch (error) {
                 console.error("Error obteniendo valor de syncStorage", error);
             }
-        }
+        };
 
         var idProfesional = await obtenerValorSyncStorage();
 
@@ -64,144 +60,202 @@ export function AgregarPacienteScreen({ navigation }) {
             console.log('Paciente guardado');
             await navigation.navigate('PerfilPaciente', { "rutPaciente": respuesta.paciente.rut });
         }
-        
-
     };
 
     const handleHomePacientes = async () => {
         navigation.navigate('HomePacientes');
     };
 
-
     return (
-        <SafeAreaView style={styles.container} >
-            <View style={styles.formularioContainer} >
+        <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+            <ScrollView 
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
+                <View style={styles.formularioContainer}>
+                    <Text style={styles.titulo}>Agregar Paciente</Text>
+                    <Text style={styles.subtitulo}>Ingresa los datos personales para el registro</Text>
 
-                <Text style={styles.titulo} > AgregarPaciente </Text>
+                    {/* RUT */}
+                    <Text style={styles.texto}>RUT Paciente <Text style={styles.requerido}>*</Text></Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Ej: 11.111.111-1"
+                        placeholderTextColor="#94A3B8"
+                        value={rut}
+                        onChangeText={setRut}
+                        autoCapitalize="characters"
+                    />
 
-                <Text style={styles.texto} > Rut Paciente * </Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Ej: 11.111.111-1"
-                    value={rut}
-                    onChangeText={setRut}
-                />
+                    {/* NOMBRE */}
+                    <Text style={styles.texto}>Nombre Completo <Text style={styles.requerido}>*</Text></Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Ej: Juan Pérez González"
+                        placeholderTextColor="#94A3B8"
+                        value={nombre}
+                        onChangeText={setNombre}
+                    />
 
-                <Text style={styles.texto} > Nombre Completo * </Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Nombre Nombre Apellido Apellido"
-                    value={nombre}
-                    onChangeText={setNombre}
-                />
+                    {/* CORREO */}
+                    <Text style={styles.texto}>Correo Electrónico</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="ejemplo@correo.com"
+                        placeholderTextColor="#94A3B8"
+                        value={correo}
+                        onChangeText={setCorreo}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                    />
 
-                <Text style={styles.texto} > Correo Electronico </Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="correo@gmail.com"
-                    value={correo}
-                    onChangeText={setCorreo}
-                />
+                    {/* CELULAR */}
+                    <Text style={styles.texto}>Celular <Text style={styles.requerido}>*</Text></Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="+56 9 11112222"
+                        placeholderTextColor="#94A3B8"
+                        value={celular}
+                        onChangeText={setCelular}
+                        keyboardType="phone-pad"
+                    />
 
-                <Text style={styles.texto} > Celular * </Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="+56 9 11112222"
-                    value={celular}
-                    onChangeText={setCelular}
-                />
+                    {/* BOTONES */}
+                    <View style={styles.contenedorBotones}>
+                        <TouchableOpacity 
+                            style={[styles.button, styles.buttonCancelar]} 
+                            onPress={handleHomePacientes}
+                            disabled={loading}
+                            activeOpacity={0.8}
+                        >
+                            <Text style={styles.buttonTextCancelar}>
+                                {loading ? 'Cargando...' : 'Cancelar'}
+                            </Text>
+                        </TouchableOpacity>
 
-
-                <View style={styles.contenedorBotones}>
-
-                    {/* Cancelar y volver a home Pacientes */}
-                    <TouchableOpacity style={[styles.button, { backgroundColor: '#8f8f8f' }]} onPress={handleHomePacientes} >
-                        <Text style={styles.buttonText} > {loading ? 'cargando...' : 'Cancelar'}  </Text>
-                    </TouchableOpacity>
-
-                    {/* Guardar e ir al perfil del paciente creado */}
-                    <TouchableOpacity style={[styles.button, { backgroundColor: '#3B82F6' }]} onPress={() => handleGuardarPaciente()} >
-                        <Text style={styles.buttonText} > {loading ? 'cargando...' : 'Guardar'}  </Text>
-                    </TouchableOpacity>
-
+                        <TouchableOpacity 
+                            style={[styles.button, styles.buttonGuardar]} 
+                            onPress={() => handleGuardarPaciente()}
+                            disabled={loading}
+                            activeOpacity={0.8}
+                        >
+                            <Text style={styles.buttonText}>
+                                {loading ? 'Cargando...' : 'Guardar'}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-
-            </View>
+            </ScrollView>
         </SafeAreaView>
-
-    )
-
+    );
 }
 
 const styles = StyleSheet.create({
-
     container: {
         flex: 1,
+        backgroundColor: '#F1F5F9',
+    },
+
+    scrollContent: {
+        flexGrow: 1,
         justifyContent: 'center',
-        alignItems: 'center',
+        paddingVertical: 20,
+    },
+
+    formularioContainer: {
+        width: '92%',
+        alignSelf: 'center',
+        backgroundColor: '#FFFFFF',
+        padding: 24,
+        borderRadius: 20,
+        shadowColor: '#0F172A',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 12,
+        elevation: 3,
+    },
+
+    titulo: {
+        fontSize: 22,
+        fontWeight: '700',
+        color: '#0F172A',
+        textAlign: 'center',
+        letterSpacing: -0.3,
+    },
+
+    subtitulo: {
+        fontSize: 14,
+        color: '#64748B',
+        textAlign: 'center',
+        marginTop: 4,
+        marginBottom: 20,
+        fontWeight: '400',
+    },
+
+    texto: {
+        fontWeight: '600',
+        fontSize: 14,
+        marginBottom: 6,
+        color: '#334155',
+    },
+
+    requerido: {
+        color: '#EF4444',
+    },
+
+    input: {
         backgroundColor: '#F8FAFC',
-        paddingBottom: 16,
+        height: 48,
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+        borderRadius: 12,
+        paddingHorizontal: 14,
+        marginBottom: 16,
+        fontSize: 15,
+        color: '#1E293B',
     },
 
     contenedorBotones: {
         flexDirection: 'row',
         width: '100%',
         justifyContent: 'space-between',
-        marginTop: 10,
+        marginTop: 12,
+        gap: 12,
     },
 
     button: {
         flex: 1,
-        borderRadius: 20,
+        borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 10,
-        height: 50,
-        marginHorizontal: 8,
+        height: 52,
+    },
+
+    buttonGuardar: {
+        backgroundColor: '#2563EB',
+        shadowColor: '#2563EB',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+
+    buttonCancelar: {
+        backgroundColor: '#F1F5F9',
+        borderWidth: 1,
+        borderColor: '#CBD5E1',
     },
 
     buttonText: {
         color: '#FFFFFF',
         fontSize: 16,
-        fontWeight: '600'
+        fontWeight: '700',
+        letterSpacing: 0.2,
     },
 
-    formularioContainer: {
-        width: '90%',
-        alignSelf: 'center',
-        backgroundColor: '#FFFFFF',
-        padding: 20,
-        borderRadius: 16,
-        // sombra para ios
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        // sombra para android
-        elevation: 4,
-    },
-
-    titulo: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#1E293B',
-        marginBottom: 24,
-        textAlign: 'center',
-    },
-
-    texto: {
+    buttonTextCancelar: {
+        color: '#475569',
+        fontSize: 16,
         fontWeight: '600',
-        fontSize: 16,
-        marginBottom: 8,
     },
-
-    input: {
-        backgroundColor: '#F1F5F9',
-        height: 50,
-        borderRadius: 8,
-        paddingHorizontal: 16,
-        marginBottom: 16,
-        fontSize: 16,
-    },
-
-})
+});

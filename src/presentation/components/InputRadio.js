@@ -1,7 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { RadioButton } from 'react-native-paper';
 import React, { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const preguntas = [
     {
@@ -19,12 +18,12 @@ const preguntas = [
         opciones: [
             { opcion: 'Dorsal o Plantar', score: 1 },
             { opcion: 'Lateral o Medial', score: 2 },
-            { opcion: 'Dos o mas', score: 3 },
+            { opcion: 'Dos o más', score: 3 },
         ]
     },
     {
         id: 3,
-        pregunta: '3. Numero de zonas afectadas (ver 1)',
+        pregunta: '3. Número de zonas afectadas',
         opciones: [
             { opcion: 'Una', score: 1 },
             { opcion: 'Dos', score: 2 },
@@ -34,22 +33,22 @@ const preguntas = [
     {
         id: 4,
         pregunta: '4. Isquemia',
-        definicion: 'ITB: Indice tobillo-brazo, medido por doopler | IDB: Indice, con dedo se refiere al hallux, medido por doppler',
+        definicion: 'ITB: Índice tobillo-brazo | IDB: Índice dedo-brazo (Hallux)',
         opciones: [
-            { opcion: 'Sin isquemia, sin signos ni sintomas, pulsos pedio y/o tibial posterior (TP) palpables, o ITB 0.90-1.2', score: 0 },
+            { opcion: 'Sin isquemia, sin signos ni síntomas, pulsos pedio y/o TP palpables, o ITB 0.90-1.2', score: 0 },
             { opcion: 'Pulsos palpables, levemente disminuidos o ITB 0.89-0.7 o IDB 0.74-0.6', score: 1 },
-            { opcion: 'Pulsos debiles, poco palpables o ITB 0.69-0.5 o IDB 0.59-0.3', score: 2 },
+            { opcion: 'Pulsos débiles, poco palpables o ITB 0.69-0.5 o IDB 0.59-0.3', score: 2 },
             { opcion: 'Sin pulsos palpables o ITB < 0.5 o IDB < 0.3', score: 3 },
         ]
     },
     {
         id: 5,
-        pregunta: '5. Infeccion',
-        definicion: 'SIRS: Sindrome de respuesta inflamatoria sistematica',
+        pregunta: '5. Infección',
+        definicion: 'SIRS: Síndrome de Respuesta Inflamatoria Sistémica',
         opciones: [
-            { opcion: 'Sin signos de infeccion', score: 0 },
-            { opcion: 'Eritemia < 2cm, descarga purulenta, caliente, doloroso', score: 1 },
-            { opcion: 'Eritemia < 2cm, infeccion en musculo, tendon articulaciones o hueso', score: 2 },
+            { opcion: 'Sin signos de infección', score: 0 },
+            { opcion: 'Eritema < 2cm, descarga purulenta, caliente, doloroso', score: 1 },
+            { opcion: 'Eritema > 2cm, infección en músculo, tendón, articulaciones o hueso', score: 2 },
             { opcion: 'SIRS, hiperglicemia o hipoglicemia secundaria', score: 3 },
         ]
     },
@@ -65,21 +64,21 @@ const preguntas = [
     },
     {
         id: 7,
-        pregunta: '7. Neuropatia',
+        pregunta: '7. Neuropatía',
         opciones: [
-            { opcion: 'Sin neuropatia', score: 0 },
-            { opcion: 'Sensibilidad protectora disminuida a monofilamento o diapason de 128 Hz', score: 1 },
-            { opcion: 'Sensibilidad protectora ausente a monofilamento o diapason de 128 Hz', score: 2 },
-            { opcion: 'Pie de Charcot o Neurosteoartropia diabetica', score: 3 },
+            { opcion: 'Sin neuropatía', score: 0 },
+            { opcion: 'Sensibilidad protectora disminuida a monofilamento o diapasón de 128 Hz', score: 1 },
+            { opcion: 'Sensibilidad protectora ausente a monofilamento o diapasón de 128 Hz', score: 2 },
+            { opcion: 'Pie de Charcot o Neuroosteoartropatía diabética', score: 3 },
         ]
     },
     {
         id: 8,
-        pregunta: '8. Area',
+        pregunta: '8. Área',
         opciones: [
-            { opcion: 'Pequena (< 10 cm2)', score: 1 },
-            { opcion: 'Mediana (10 - 40 cm2)', score: 2 },
-            { opcion: 'Grande (> 40 cm2)', score: 3 },
+            { opcion: 'Pequeña (< 10 cm²)', score: 1 },
+            { opcion: 'Mediana (10 - 40 cm²)', score: 2 },
+            { opcion: 'Grande (> 40 cm²)', score: 3 },
         ]
     },
     {
@@ -87,24 +86,22 @@ const preguntas = [
         pregunta: '9. Profundidad',
         opciones: [
             { opcion: 'Superficial (piel)', score: 1 },
-            { opcion: 'Tendones, fascia, musculos', score: 2 },
+            { opcion: 'Tendones, fascia, músculos', score: 2 },
             { opcion: 'Articular, huesos', score: 3 },
         ]
     },
     {
         id: 10,
-        pregunta: '10. Etapa de Cicatrizacion',
+        pregunta: '10. Etapa de Cicatrización',
         opciones: [
-            { opcion: 'Epitelizacion', score: 1 },
+            { opcion: 'Epitelización', score: 1 },
             { opcion: 'Granulatoria', score: 2 },
             { opcion: 'Inflamatoria', score: 3 },
         ]
     },
 ];
 
-
 const InputRadio = ({ onFinalizar }) => {
-
     const [pasoActual, setPasoActual] = useState(0);
     const [respuestas, setRespuestas] = useState({});
 
@@ -112,11 +109,11 @@ const InputRadio = ({ onFinalizar }) => {
 
     const handleSeleccionarOpcion = (opcion) => {
         setRespuestas({ ...respuestas, [preguntaActual.id]: opcion.score });
-    }
+    };
 
     const handleSeguiente = () => {
         if (respuestas[preguntaActual.id] === undefined) {
-            Alert.alert('Opcion requerida', 'Debe seleccionar una opcion antes de continuar');
+            Alert.alert('Opción requerida', 'Debe seleccionar una opción antes de continuar');
             return;
         }
 
@@ -126,99 +123,138 @@ const InputRadio = ({ onFinalizar }) => {
         else {
             calcularResultado();
         }
-    }
+    };
 
     const handleAnterior = () => {
         if (pasoActual > 0) {
             setPasoActual(pasoActual - 1);
         }
-    }
+    };
 
     const calcularResultado = () => {
         const total = Object.values(respuestas).reduce(
             (acumulador, respuesta) => acumulador + respuesta, 0
         );
-        console.log('Respuestas:', respuestas); //////////////
-        console.log('Puntaje total:', total);   //////////////
-
-
         onFinalizar(total, respuestas);
-    }
-
+    };
 
     return (
         <View style={styles.container}>
-
-            <Text style={styles.preguntaCount} >Pregunta {pasoActual + 1} de {preguntas.length}</Text>
+            {/* ENCABEZADO DE PROGRESO */}
+            <View style={styles.progressHeader}>
+                <Text style={styles.preguntaCount}>
+                    Pregunta <Text style={styles.pasoHighlight}>{pasoActual + 1}</Text> de {preguntas.length}
+                </Text>
+            </View>
 
             <ScrollView
                 style={styles.contenido}
                 contentContainerStyle={styles.contenidoContainer}
                 showsVerticalScrollIndicator={false}
             >
-                <Text style={styles.preguntaContainer} >{preguntaActual.pregunta}</Text>
+                <Text style={styles.preguntaTitulo}>{preguntaActual.pregunta}</Text>
 
-                <Text style={styles.definicionTexto}>{preguntaActual.definicion}</Text>
+                {preguntaActual.definicion && (
+                    <View style={styles.definicionBox}>
+                        <Text style={styles.definicionTexto}>{preguntaActual.definicion}</Text>
+                    </View>
+                )}
 
-                {preguntaActual.opciones.map((opcion) => {
+                <View style={styles.opcionesLista}>
+                    {preguntaActual.opciones.map((opcion) => {
+                        const seleccionada = respuestas[preguntaActual.id] === opcion.score;
 
-                    const seleccionada = respuestas[preguntaActual.id] === opcion.score;
-
-                    return (
-
-                        <TouchableOpacity
-                            key={opcion.score}
-                            style={styles.opcionContainer}
-                            onPress={() => handleSeleccionarOpcion(opcion)}
-                        >
-                            <Text style={styles.opcionTexto}> {opcion.opcion} </Text>
-
-                            <RadioButton
-                                value={String(opcion.score)}
-                                status={seleccionada ? 'checked' : 'unchecked'}
+                        return (
+                            <TouchableOpacity
+                                key={opcion.score}
+                                style={[
+                                    styles.opcionCard,
+                                    seleccionada && styles.opcionCardSeleccionada
+                                ]}
                                 onPress={() => handleSeleccionarOpcion(opcion)}
-                            />
-                        </TouchableOpacity>
+                                activeOpacity={0.8}
+                            >
+                                <Text style={[
+                                    styles.opcionTexto,
+                                    seleccionada && styles.opcionTextoSeleccionado
+                                ]}>
+                                    {opcion.opcion}
+                                </Text>
 
-                    )
-
-                })}
+                                <RadioButton
+                                    value={String(opcion.score)}
+                                    status={seleccionada ? 'checked' : 'unchecked'}
+                                    onPress={() => handleSeleccionarOpcion(opcion)}
+                                    color="#2563EB"
+                                    uncheckedColor="#94A3B8"
+                                />
+                            </TouchableOpacity>
+                        );
+                    })}
+                </View>
             </ScrollView>
 
+            {/* BOTONES DE NAVEGACIÓN */}
             <View style={styles.contenedorBotones}>
-
                 <TouchableOpacity
                     onPress={handleAnterior}
                     disabled={pasoActual === 0}
-                    style={[styles.button, pasoActual === 0 ? styles.buttonDeshabilitado : styles.buttonAnterior]}
+                    style={[
+                        styles.button, 
+                        styles.buttonAnterior,
+                        pasoActual === 0 && styles.buttonDeshabilitado
+                    ]}
+                    activeOpacity={0.8}
                 >
-                    <Text style={[styles.buttonText, pasoActual === 0 && styles.textoDeshabilitado]} > Anterior </Text>
+                    <Text style={[
+                        styles.buttonTextAnterior,
+                        pasoActual === 0 && styles.textoDeshabilitado
+                    ]}>
+                        Anterior
+                    </Text>
                 </TouchableOpacity>
 
-
-                <TouchableOpacity onPress={handleSeguiente} style={[styles.button, { backgroundColor: '#9d83ce' }]}>
+                <TouchableOpacity 
+                    onPress={handleSeguiente} 
+                    style={[styles.button, styles.buttonSiguiente]}
+                    activeOpacity={0.8}
+                >
                     <Text style={styles.buttonText}>
                         {pasoActual === preguntas.length - 1 ? 'Finalizar' : 'Siguiente'}
                     </Text>
                 </TouchableOpacity>
-
             </View>
-
-
         </View>
-
     );
 };
 
 export default InputRadio;
 
-
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         width: '100%',
-        paddingHorizontal: 13,
+    },
+
+    progressHeader: {
+        alignItems: 'center',
+        paddingBottom: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F1F5F9',
+        marginBottom: 12,
+    },
+
+    preguntaCount: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#64748B',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+
+    pasoHighlight: {
+        color: '#2563EB',
+        fontWeight: '700',
     },
 
     contenido: {
@@ -226,71 +262,120 @@ const styles = StyleSheet.create({
     },
 
     contenidoContainer: {
-        paddingBottom: 20,
+        paddingBottom: 16,
+    },
+
+    preguntaTitulo: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#0F172A',
+        marginBottom: 12,
+        lineHeight: 24,
+        letterSpacing: -0.3,
+    },
+
+    definicionBox: {
+        backgroundColor: '#EFF6FF',
+        borderLeftWidth: 3,
+        borderLeftColor: '#2563EB',
+        padding: 10,
+        borderRadius: 8,
+        marginBottom: 16,
+    },
+
+    definicionTexto: {
+        fontSize: 13,
+        color: '#1E40AF',
+        fontWeight: '500',
+        lineHeight: 18,
+    },
+
+    opcionesLista: {
+        gap: 10,
+    },
+
+    opcionCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        paddingVertical: 12,
+        paddingHorizontal: 14,
+        backgroundColor: '#F8FAFC',
+        borderWidth: 1.5,
+        borderColor: '#E2E8F0',
+        borderRadius: 14,
+    },
+
+    opcionCardSeleccionada: {
+        backgroundColor: '#EFF6FF',
+        borderColor: '#2563EB',
+    },
+
+    opcionTexto: {
+        flex: 1,
+        fontSize: 14,
+        color: '#334155',
+        fontWeight: '500',
+        paddingRight: 10,
+        lineHeight: 20,
+    },
+
+    opcionTextoSeleccionado: {
+        color: '#1E3A8A',
+        fontWeight: '600',
     },
 
     contenedorBotones: {
         flexDirection: 'row',
         width: '100%',
-        paddingVertical: 10,
+        paddingTop: 12,
+        gap: 12,
     },
 
     button: {
         flex: 1,
-        borderRadius: 20,
+        borderRadius: 14,
         justifyContent: 'center',
         alignItems: 'center',
-        height: 50,
-        marginHorizontal: 8,
+        height: 48,
     },
 
     buttonAnterior: {
-        backgroundColor: '#9d83ce',
+        backgroundColor: '#F1F5F9',
+        borderWidth: 1,
+        borderColor: '#CBD5E1',
     },
 
     buttonSiguiente: {
-        backgroundColor: '#9d83ce',
+        backgroundColor: '#2563EB',
+        shadowColor: '#2563EB',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 6,
+        elevation: 3,
     },
 
     buttonDeshabilitado: {
-        backgroundColor: '#b598e2',
-        opacity: 0.6,
+        backgroundColor: '#F8FAFC',
+        borderColor: '#E2E8F0',
+        elevation: 0,
     },
 
     buttonText: {
         color: '#FFFFFF',
-        fontSize: 16,
+        fontSize: 15,
+        fontWeight: '700',
+        letterSpacing: 0.2,
+    },
+
+    buttonTextAnterior: {
+        color: '#475569',
+        fontSize: 15,
         fontWeight: '600',
     },
 
-    preguntaCount: {
-        fontSize: 15,
-        textAlign: 'center',
-        paddingVertical: 10,
-    },
-
-    preguntaContainer: {
-        fontSize: 20,
-        paddingTop: 15,
-    },
-
-    definicionTexto: {
-        fontSize: 15,
-        paddingTop: 10,
-        color: '#6a6c76',
-    },
-
-    opcionContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: '100%',
-        paddingVertical: 10,
-    },
-
-    opcionTexto: {
-        flex: 1,
-        fontSize: 18,
-        paddingRight: 12,
+    textoDeshabilitado: {
+        color: '#CBD5E1',
     },
 });
